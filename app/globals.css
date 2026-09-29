@@ -100,3 +100,55 @@ footer{min-height:110px;margin:0 max(28px,6%);gap:30px}footer .brand-logo{margin
 @media(max-width:900px) and (orientation:portrait){.rotate-notice{position:fixed;inset:0;background:#fff;z-index:40;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px}.rotate-notice h2{font-size:38px}.rotate-notice a{border-bottom:1px solid var(--ink)}}
 .hazard-legend{display:flex;gap:5px;margin:12px 0}.hazard-legend figure{margin:0;flex:1;text-align:center}.hazard-legend svg{width:45px;height:45px}.hazard-legend figcaption{font-size:10px;line-height:1.2}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Softer visual language and illustrated science elements */
+button,.button,.nav-cta{border-radius:7px}
+.brand-symbol{width:43px;height:43px}
+.ambient i:nth-child(2){border-radius:50%;width:14px;height:14px}
+.ambient i:nth-child(3){border-radius:50%;transform:none}
+.ambient i:nth-child(4){border-radius:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);align-items:center;gap:6%;min-height:calc(90vh - 84px);padding:70px 0}
+.hero-copy{position:relative;z-index:2}.hero h1{font-size:clamp(54px,6.5vw,88px)}
+.hero-bottom{display:block;max-width:590px}.hero-bottom p{margin-bottom:34px}.hero-bottom .text-link{width:max-content}
+.hero-art{position:relative;width:min(100%,520px);justify-self:end;filter:drop-shadow(0 28px 38px #3e49411c)}
+.hero-art svg{display:block;width:100%;overflow:visible}
+.art-ring{fill:none;stroke:#dde1db;stroke-width:1.5;stroke-dasharray:5 9;transform-origin:center;animation:art-ring 28s linear infinite}.ring-b{stroke:#ecece6;animation-direction:reverse;animation-duration:19s}
+.art-glass{fill:#ffffffb8;stroke:#27322d;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.art-liquid{fill:#ca3b47;opacity:.76}.art-wave{fill:none;stroke:#ad2433;stroke-width:4;animation:art-wave 4s ease-in-out infinite}
+.art-bubbles circle{fill:#fff;opacity:.72;animation:art-bubble 3.8s ease-in-out infinite}.art-bubbles circle:nth-child(2){animation-delay:-1s}.art-bubbles circle:nth-child(3){animation-delay:-2.1s}.art-bubbles circle:nth-child(4){animation-delay:-2.8s}
+.art-drops{fill:#ca3b47}.art-drops path{animation:art-drop 3.5s ease-in-out infinite}.art-drops path+path{animation-delay:-1.6s}
+.art-note{position:absolute;padding:7px 11px;border:1px solid var(--line);border-radius:7px;background:#fffffff0;font:12px monospace;color:var(--muted);box-shadow:0 8px 22px #242b2510}.note-acid{left:1%;top:32%}.note-base{right:0;bottom:22%}
+@keyframes art-ring{to{transform:rotate(360deg)}}
+@keyframes art-wave{0%,100%{transform:translateX(-5px)}50%{transform:translateX(7px)}}
+@keyframes art-bubble{0%,100%{transform:translateY(9px);opacity:.35}50%{transform:translateY(-14px);opacity:.85}}
+@keyframes art-drop{0%,100%{transform:translateY(-5px)}50%{transform:translateY(10px)}}
+.subject-card{border-radius:14px;overflow:hidden;border-color:#e4e5df;box-shadow:0 5px 24px #1d251b08}
+.subject-card[aria-disabled]{background:#fbfcf9}.subject-mark{border-radius:50%;border:0;background:#f4f5f1!important;width:88px;height:88px;padding:18px}
+.subject-mark svg{display:block;width:100%;height:100%}.subject-card.chemistry .subject-mark{background:#fff3f2!important}.subject-card.biology .subject-mark{background:#f0f7f0!important}.subject-card.physics .subject-mark{background:#eef5fa!important}
+.subject-card h3{letter-spacing:-.02em}
+
+/* Filterable experiment catalog */
+.chemistry-page{max-width:1240px}.chemistry-page .page-intro{padding-bottom:48px}
+.catalog{border-top:1px solid var(--line);padding-top:44px}.catalog-heading{display:flex;justify-content:space-between;align-items:end;gap:24px}.catalog-heading h2{font-size:34px;margin:0}.catalog-heading p{color:var(--muted);margin:0}
+.catalog-filters{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 34px}.catalog-filters button{padding:8px 14px;background:#f6f7f3;border-color:transparent;color:#5d625d;font-size:14px}.catalog-filters button.active{background:#272b28;color:#fff}
+.experiment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.catalog-card{min-height:285px;border:1px solid #e2e4dd;border-radius:12px;padding:22px;background:#fafbf8;display:flex;flex-direction:column;color:#777c76;transition:transform .25s,box-shadow .25s,border-color .2s}
+.catalog-card.available{background:#fff;color:var(--ink)}.catalog-card.available:hover{transform:translateY(-5px);border-color:#bfc2bb;box-shadow:0 16px 35px #1d251b10}
+.experiment-card-top{display:flex;justify-content:space-between;color:var(--muted);font:12px monospace}.mini-flask{font-size:36px;margin:26px 0 18px;color:#a6aaa4}.available .mini-flask{color:var(--red)}
+.catalog-card h3{font-size:24px;margin:0 0 10px;color:inherit}.catalog-card p{font-size:14px;color:var(--muted);line-height:1.45}.catalog-status{margin-top:auto;padding-top:15px;border-top:1px solid #e1e2dc;font-size:13px}.available .catalog-status{color:var(--red)}
+
+/* Experiment explanation */
+.experiment-intro{max-width:900px}.brief{border-top:0;padding-top:0}.brief>p{font-size:17px;line-height:1.62}.learning-points{margin:30px 0;padding:24px 26px;background:#f5f6f2;border-radius:12px}.learning-points h3{font-size:19px}.learning-points ul{margin:0;padding-left:20px}.learning-points li{margin:10px 0}
+.context-note{padding:18px 20px;border:1px solid #dedfd9;border-radius:10px;background:#fff}.safety-note{border:0;border-left:3px solid #c95a5a;border-radius:0 9px 9px 0}
+.mode-list article{border-radius:12px;border-color:#e0e1db;box-shadow:0 4px 16px #1b211807}.mode-list article:hover{transform:translateY(-3px)}
+
+/* Tool information opens out of the inventory instead of stacking below it. */
+.inventory{position:relative}.tool-info{position:fixed;z-index:18;left:230px;top:76px;width:min(560px,calc(100vw - 520px));min-width:430px;max-height:calc(100vh - 92px);overflow:auto;padding:28px;background:#fffffff7;border:1px solid #dfe1da;border-radius:0 14px 14px 0;box-shadow:18px 18px 45px #1720191c;display:grid;grid-template-columns:1.05fr .95fr;gap:22px;opacity:0;visibility:hidden;transform:translateX(-10px);transition:opacity .2s,transform .25s,visibility .2s;pointer-events:none}
+.inventory:hover .tool-info,.inventory:focus-within .tool-info{opacity:1;visibility:visible;transform:translateX(0);pointer-events:auto}
+.tool-info-copy>span{display:block;font:11px monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}.tool-info h3{font-size:27px;margin-bottom:14px}.tool-info p{font-size:14px;line-height:1.5}.safety-copy{padding:13px 15px;background:#f7f2ef;border-radius:8px}.safety-copy strong{display:block;font-size:12px;color:#a02d2d;margin-bottom:5px}.popover-preview{min-height:240px;background:#f4f5f1;border-radius:10px;overflow:hidden;position:relative}.popover-preview canvas{min-height:220px}.popover-preview small{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px}
+.inventory-list{max-height:calc(100vh - 140px);overflow:auto;padding-right:2px}.inventory-item{border-radius:6px}.inventory-item:hover{background:#f5f6f2}
+
+@media(max-width:1100px){.tool-info{left:190px;width:500px;min-width:0}.experiment-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.hero{grid-template-columns:1fr;min-height:auto;padding-top:70px}.hero-art{width:min(82vw,460px);justify-self:center;margin-top:28px}.tool-info{position:static;width:auto;min-width:0;max-height:none;grid-template-columns:1fr;opacity:1;visibility:visible;transform:none;border-radius:10px;margin-top:14px;padding:18px;box-shadow:none}.popover-preview{min-height:190px}.inventory-list{max-height:none;overflow:visible}}
+@media(max-width:600px){.hero{display:block}.hero h1{font-size:clamp(46px,13vw,60px)}.hero-art{width:100%;margin-top:46px}.art-note{font-size:10px}.experiment-grid{grid-template-columns:1fr}.catalog-heading{display:block}.catalog-heading p{margin-top:10px}.catalog-filters{flex-wrap:nowrap;overflow:auto;padding-bottom:5px}.catalog-filters button{white-space:nowrap}.catalog-card{min-height:250px}.learning-points{padding:20px}}
+@media(prefers-reduced-motion:reduce){.art-ring,.art-wave,.art-bubbles circle,.art-drops path{animation:none!important}}
