@@ -19,17 +19,56 @@ export const tools = [
 export const steps = ['Kenakan seluruh APD', 'Pasang statif dan buret', 'Kondisikan buret dengan NaOH', 'Isi buret dan buang gelembung', 'Lepas corong; catat volume awal', 'Pipet 25,00 mL HCl', 'Tambahkan fenolftalein', 'Tempatkan labu di bawah buret', 'Titrasi hingga pink pucat menetap', 'Baca meniskus dan hitung hasil'];
 export const targets: Record<string, [number, number, number]> = { stand: [-.65, .86, 0], burette: [-.3, 1.08, 0], flask: [-.3, .87, .15], funnel: [-.3, 2.34, 0] };
 export type Obj = { id: string; pos: [number, number, number]; locked: boolean };
-export type State = { mode: Mode; step: number; objects: Obj[]; ppe: string[]; log: { text: string; at: number }[]; penalties: Record<string, number>; volume: number; mixed: boolean; stable: number; indicator: boolean; funnelPlaced: boolean; pipetteLoaded: boolean; finished: boolean; expired: boolean; answers?: { initial: string; final: string; molarity: string }; remaining: number; feedback: string };
-export const initial = (mode: Mode): State => ({ mode, step: 0, objects: [], ppe: [], log: [], penalties: {}, volume: 0, mixed: false, stable: 0, indicator: false, funnelPlaced: false, pipetteLoaded: false, finished: false, expired: false, remaining: 600, feedback: '' });
+export type StepSnapshot = { objects: Obj[]; ppe: string[]; volume: number; mixed: boolean; stable: number; indicator: boolean; funnelPlaced: boolean; pipetteLoaded: boolean };
+export type State = { mode: Mode; step: number; objects: Obj[]; ppe: string[]; log: { text: string; at: number }[]; penalties: Record<string, number>; volume: number; mixed: boolean; stable: number; indicator: boolean; funnelPlaced: boolean; pipetteLoaded: boolean; finished: boolean; expired: boolean; answers?: { initial: string; final: string; molarity: string }; remaining: number; feedback: string; stepSnapshots?: Record<number, StepSnapshot> };
+export const initial = (mode: Mode): State => ({ mode, step: 0, objects: [], ppe: [], log: [], penalties: {}, volume: 0, mixed: false, stable: 0, indicator: false, funnelPlaced: false, pipetteLoaded: false, finished: false, expired: false, remaining: 600, feedback: '', stepSnapshots: { 0: { objects: [], ppe: [], volume: 0, mixed: false, stable: 0, indicator: false, funnelPlaced: false, pipetteLoaded: false } } });
 export type Action = { type: string; id?: string; pos?: [number, number, number]; value?: number; answers?: State['answers'] };
 const has = (s: State, id: string) => s.objects.some(o => o.id === id);
 const locked = (s: State, id: string) => s.objects.some(o => o.id === id && o.locked);
 const log = (s: State, text: string) => ({ ...s, feedback: '', log: [...s.log, { text, at: Date.now() }].slice(-120) });
+const createSnapshot = (s: State): StepSnapshot => ({ objects: s.objects.map(o => ({ ...o, pos: [...o.pos] as [number, number, number] })), ppe: [...s.ppe], volume: s.volume, mixed: s.mixed, stable: s.stable, indicator: s.indicator, funnelPlaced: s.funnelPlaced, pipetteLoaded: s.pipetteLoaded });
 function fail(s: State, message: string, category = 'procedure', points = 5, cap = 20) { const next = log(s, message); return { ...next, feedback: s.mode === 'latihan' ? message : 'Tindakan dicatat.', penalties: s.mode === 'ujian' ? { ...s.penalties, [category]: Math.min(cap, (s.penalties[category] || 0) + points) } : s.penalties } }
 export function score(s: State) { return Math.max(0, 100 - Object.values(s.penalties).reduce((a, b) => a + b, 0)) }
 export const endpoint = (s: State) => s.indicator && s.volume >= 24.8;
-export function reducer(s: State, a: Action): State {
+function rawReducer(s: State, a: Action): State {
     if (a.type === 'reset') return initial(s.mode);
+    if (a.type === 'resetStep') {
+        const snap = s.stepSnapshots?.[s.step];
+        if (!snap) return s;
+        return {
+            ...s,
+            objects: snap.objects.map(o => ({ ...o, pos: [...o.pos] as [number, number, number] })),
+            ppe: [...snap.ppe],
+            volume: snap.volume,
+            mixed: snap.mixed,
+            stable: snap.stable,
+            indicator: snap.indicator,
+            funnelPlaced: snap.funnelPlaced,
+            pipetteLoaded: snap.pipetteLoaded,
+            feedback: '',
+            log: [...s.log, { text: `Langkah ${s.step + 1} (${steps[s.step]}) diulang.`, at: Date.now() }].slice(-120)
+        };
+    }
+    if (a.type === 'prevStep') {
+        if (s.step <= 0) return s;
+        const prev = s.step - 1;
+        const snap = s.stepSnapshots?.[prev];
+        if (!snap) return { ...s, step: prev };
+        return {
+            ...s,
+            objects: snap.objects.map(o => ({ ...o, pos: [...o.pos] as [number, number, number] })),
+            ppe: [...snap.ppe],
+            volume: snap.volume,
+            mixed: snap.mixed,
+            stable: snap.stable,
+            indicator: snap.indicator,
+            funnelPlaced: snap.funnelPlaced,
+            pipetteLoaded: snap.pipetteLoaded,
+            step: prev,
+            feedback: '',
+            log: [...s.log, { text: `Kembali ke langkah ${prev + 1}: ${steps[prev]}.`, at: Date.now() }].slice(-120)
+        };
+    }
     if (s.finished) return s;
     if (a.type === 'tick') { if (s.mode !== 'ujian') return s; const remaining = Math.max(0, a.value ?? s.remaining - 1); return remaining ? { ...s, remaining } : { ...log(s, 'Waktu ujian habis.'), remaining: 0, finished: true, expired: true, penalties: { ...s.penalties, time: 20, incomplete: Math.max(0, 9 - s.step) * 5 } } }
     if (a.type === 'add' && a.id) { const id = a.id; if (has(s, id)) return s; if (tools.find(t => t.id === id)?.kind === 'ppe') { const ppe = [...new Set([...s.ppe, id])]; return { ...log(s, `${tools.find(t => t.id === id)?.name} dipakai.`), ppe, step: ppe.length === 3 ? Math.max(1, s.step) : s.step } } let n = { ...s, objects: [...s.objects, { id, pos: [.45 + (s.objects.length % 4) * .58, .87, -.72 + Math.floor(s.objects.length / 4) * .52] as [number, number, number], locked: false }] }; if (['naoh', 'hcl', 'indicator'].includes(id) && s.ppe.length < 3) n = fail(n, 'Lengkapi APD sebelum menangani bahan.', 'ppe', 15, 15); if (['tube', 'cylinder'].includes(id)) n = fail(n, 'Alat ini tidak sesuai pengukuran titrasi.', 'selection', 5, 15); return log(n, `${tools.find(t => t.id === id)?.name} diambil.`) }
@@ -50,4 +89,19 @@ export function reducer(s: State, a: Action): State {
     if (a.type === 'finish') { if (s.step !== 8) return fail(s, 'Selesaikan persiapan sebelum menutup titrasi.'); if (s.mode === 'latihan' && (!endpoint(s) || !s.mixed)) return fail(s, 'Capai warna pink pucat, lalu aduk labu sebelum menyelesaikan titrasi.'); let n = s; if (!endpoint(s) || !s.mixed) n = fail(s, 'Titik akhir belum tepat atau larutan belum diaduk.', 'endpoint', 10, 10); return { ...log(n, 'Titrasi diakhiri pada warna pink pucat.'), step: 9 } }
     if (a.type === 'submit' && a.answers) { if (s.step !== 9) return s; const num = (v: string) => v.trim() ? Number(v.replace(',', '.')) : NaN; const ans = a.answers; let n: State = { ...s, answers: ans }; const meniscusWrong = !Number.isFinite(num(ans.initial)) || !Number.isFinite(num(ans.final)) || Math.abs(num(ans.initial) - .15) > .02 || Math.abs(num(ans.final) - (.15 + s.volume)) > .02; const calculationWrong = !Number.isFinite(num(ans.molarity)) || Math.abs(num(ans.molarity) - (.1 * s.volume / 25)) > .0005; if (meniscusWrong) { n = fail(n, 'Pembacaan meniskus belum tepat.', 'meniscus', 15, 15); if (s.mode === 'latihan') n = { ...n, penalties: { ...n.penalties, meniscus: 15 } } } if (calculationWrong) { n = fail(n, 'Perhitungan molaritas belum tepat.', 'calculation', 15, 15); if (s.mode === 'latihan') n = { ...n, penalties: { ...n.penalties, calculation: 15 } } } return { ...log(n, 'Jawaban dikumpulkan.'), finished: true } }
     return s;
+}
+
+export function reducer(s: State, a: Action): State {
+    const next = rawReducer(s, a);
+    if (next.step > s.step) {
+        return {
+            ...next,
+            stepSnapshots: {
+                ...(s.stepSnapshots || {}),
+                ...(next.stepSnapshots || {}),
+                [next.step]: createSnapshot(next)
+            }
+        };
+    }
+    return next;
 }
