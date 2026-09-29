@@ -1,8 +1,8 @@
 export type Mode='latihan'|'ujian';
 export const tools=[
- {id:'goggles',name:'Kacamata',kind:'ppe',info:'Melindungi mata dari percikan larutan.',safety:'Pakai sebelum menangani bahan.'},
- {id:'coat',name:'Jas laboratorium',kind:'ppe',info:'Melindungi kulit dan pakaian.',safety:'Kancingkan sebelum bekerja.'},
- {id:'gloves',name:'Sarung tangan',kind:'ppe',info:'Mengurangi kontak langsung dengan larutan.',safety:'Ganti jika terkontaminasi.'},
+ {id:'goggles',name:'Kacamata keselamatan',kind:'ppe',info:'Pelindung mata dengan lensa bening dan sisi tertutup untuk mengurangi risiko percikan larutan masuk dari depan maupun samping.',safety:'Pastikan terpasang rapat sebelum botol bahan dibuka. Kacamata biasa tidak menggantikan kacamata keselamatan.'},
+ {id:'coat',name:'Jas laboratorium',kind:'ppe',info:'Lapisan pelindung berlengan panjang yang membantu mencegah percikan langsung mengenai kulit dan pakaian.',safety:'Kancingkan jas, rapikan rambut panjang, dan lepaskan jas sebelum meninggalkan area praktikum.'},
+ {id:'gloves',name:'Sarung tangan',kind:'ppe',info:'Sarung tangan laboratorium membantu mengurangi kontak kulit dengan larutan selama penanganan alat dan bahan.',safety:'Periksa sobekan sebelum dipakai. Ganti segera jika terkena bahan dan jangan menyentuh wajah atau perangkat pribadi.'},
  {id:'stand',name:'Statif & klem',kind:'stand',info:'Menahan buret tegak di atas meja.',safety:'Pastikan alas stabil.'},
  {id:'burette',name:'Buret 50 mL',kind:'burette',info:'Mengukur volume titran yang dialirkan.',safety:'Klem dengan hati-hati; kaca dapat pecah.'},
  {id:'flask',name:'Erlenmeyer',kind:'flask',info:'Wadah sampel HCl selama titrasi.',safety:'Periksa retak sebelum digunakan.'},
@@ -12,7 +12,7 @@ export const tools=[
  {id:'naoh',name:'NaOH 0,100 M',kind:'bottle',info:'Titran basa dengan konsentrasi diketahui.',safety:'Hindari kontak mata/kulit. Klasifikasi bergantung konsentrasi dan SDS.'},
  {id:'hcl',name:'HCl · sampel',kind:'bottle',info:'Asam berkonsentrasi tidak diketahui.',safety:'Hindari kontak langsung; gunakan APD.'},
  {id:'indicator',name:'Fenolftalein',kind:'bottle',info:'Indikator tak berwarna dalam asam, pink dalam basa.',safety:'Gunakan 2–3 tetes. Larutan berbasis alkohol dapat mudah terbakar.'},
- {id:'water',name:'Air deionisasi',kind:'bottle',info:'Membilas dinding labu tanpa mengubah mol asam.',safety:'Tidak untuk diminum.'},
+ {id:'water',name:'Air deionisasi',kind:'bottle',info:'Air yang sebagian besar ion mineralnya telah dihilangkan. Digunakan untuk membilas dinding Erlenmeyer agar seluruh sampel turun ke larutan tanpa menambah jumlah mol asam.',safety:'Bukan air minum. Simpan di botol berlabel dan hindari menyentuhkan ujung botol ke alat untuk mencegah kontaminasi.'},
  {id:'tube',name:'Tabung reaksi',kind:'burette',info:'Wadah reaksi skala kecil; bukan pengukur volume presisi.',safety:'Tidak diperlukan pada percobaan ini.'},
  {id:'cylinder',name:'Gelas ukur',kind:'beaker',info:'Mengukur volume perkiraan.',safety:'Tidak menggantikan pipet volumetrik dalam percobaan ini.'}
 ];
