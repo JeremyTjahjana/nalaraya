@@ -1,20 +1,29 @@
 export type Mode = 'latihan' | 'ujian';
-export const tools = [
-    { id: 'goggles', name: 'Kacamata keselamatan', kind: 'ppe', info: 'Pelindung mata dengan lensa bening dan sisi tertutup untuk mengurangi risiko percikan larutan masuk dari depan maupun samping.', safety: 'Pastikan terpasang rapat sebelum botol bahan dibuka. Kacamata biasa tidak menggantikan kacamata keselamatan.' },
-    { id: 'coat', name: 'Jas laboratorium', kind: 'ppe', info: 'Lapisan pelindung berlengan panjang yang membantu mencegah percikan langsung mengenai kulit dan pakaian.', safety: 'Kancingkan jas, rapikan rambut panjang, dan lepaskan jas sebelum meninggalkan area praktikum.' },
-    { id: 'gloves', name: 'Sarung tangan', kind: 'ppe', info: 'Sarung tangan laboratorium membantu mengurangi kontak kulit dengan larutan selama penanganan alat dan bahan.', safety: 'Periksa sobekan sebelum dipakai. Ganti segera jika terkena bahan dan jangan menyentuh wajah atau perangkat pribadi.' },
-    { id: 'stand', name: 'Statif & klem', kind: 'stand', info: 'Menahan buret tegak di atas meja.', safety: 'Pastikan alas stabil.' },
-    { id: 'burette', name: 'Buret 50 mL', kind: 'burette', info: 'Mengukur volume titran yang dialirkan.', safety: 'Klem dengan hati-hati; kaca dapat pecah.' },
-    { id: 'flask', name: 'Erlenmeyer', kind: 'flask', info: 'Wadah sampel HCl selama titrasi.', safety: 'Periksa retak sebelum digunakan.' },
-    { id: 'pipette', name: 'Pipet 25 mL & propipet', kind: 'pipette', info: 'Memindahkan tepat 25,00 mL sampel.', safety: 'Gunakan propipet; jangan pipet dengan mulut.' },
-    { id: 'funnel', name: 'Corong', kind: 'funnel', info: 'Membantu mengisi buret.', safety: 'Lepas sebelum pembacaan dan titrasi.' },
-    { id: 'waste', name: 'Gelas limbah', kind: 'beaker', info: 'Menampung larutan pembilas dan pembuangan awal.', safety: 'Pisahkan limbah sesuai petunjuk guru.' },
-    { id: 'naoh', name: 'NaOH 0,100 M', kind: 'bottle', info: 'Titran basa dengan konsentrasi diketahui.', safety: 'Hindari kontak mata/kulit. Klasifikasi bergantung konsentrasi dan SDS.' },
-    { id: 'hcl', name: 'HCl · sampel', kind: 'bottle', info: 'Asam berkonsentrasi tidak diketahui.', safety: 'Hindari kontak langsung; gunakan APD.' },
-    { id: 'indicator', name: 'Fenolftalein', kind: 'bottle', info: 'Indikator tak berwarna dalam asam, pink dalam basa.', safety: 'Gunakan 2–3 tetes. Larutan berbasis alkohol dapat mudah terbakar.' },
-    { id: 'water', name: 'Air deionisasi', kind: 'bottle', info: 'Air yang sebagian besar ion mineralnya telah dihilangkan. Digunakan untuk membilas dinding Erlenmeyer agar seluruh sampel turun ke larutan tanpa menambah jumlah mol asam.', safety: 'Bukan air minum. Simpan di botol berlabel dan hindari menyentuhkan ujung botol ke alat untuk mencegah kontaminasi.' },
-    { id: 'tube', name: 'Tabung reaksi', kind: 'burette', info: 'Wadah reaksi skala kecil; bukan pengukur volume presisi.', safety: 'Tidak diperlukan pada percobaan ini.' },
-    { id: 'cylinder', name: 'Gelas ukur', kind: 'beaker', info: 'Mengukur volume perkiraan.', safety: 'Tidak menggantikan pipet volumetrik dalam percobaan ini.' }
+export type ToolItem = {
+    id: string;
+    name: string;
+    kind: string;
+    category: string;
+    spec: string;
+    info: string;
+    safety: string;
+};
+export const tools: ToolItem[] = [
+    { id: 'goggles', name: 'Kacamata keselamatan', kind: 'ppe', category: 'Alat Pelindung Diri', spec: 'Polikarbonat jernih · EN166 / ANSI Z87.1', info: 'Pelindung mata dengan lensa bening dan sisi tertutup untuk mengurangi risiko percikan larutan masuk dari depan maupun samping.', safety: 'Pastikan terpasang rapat sebelum botol bahan dibuka. Kacamata biasa tidak menggantikan kacamata keselamatan.' },
+    { id: 'coat', name: 'Jas laboratorium', kind: 'ppe', category: 'Alat Pelindung Diri', spec: 'Katun poliester lengan panjang · Kancing tertutup', info: 'Lapisan pelindung berlengan panjang yang membantu mencegah percikan langsung mengenai kulit dan pakaian.', safety: 'Kancingkan jas, rapikan rambut panjang, dan lepaskan jas sebelum meninggalkan area praktikum.' },
+    { id: 'gloves', name: 'Sarung tangan', kind: 'ppe', category: 'Alat Pelindung Diri', spec: 'Nitrile bebas serbuk · Ketahanan asam/basa sedang', info: 'Sarung tangan laboratorium membantu mengurangi kontak kulit dengan larutan selama penanganan alat dan bahan.', safety: 'Periksa sobekan sebelum dipakai. Ganti segera jika terkena bahan dan jangan menyentuh wajah atau perangkat pribadi.' },
+    { id: 'stand', name: 'Statif & klem', kind: 'stand', category: 'Penyangga', spec: 'Batang baja krom 60 cm · Alas besi cor & klem buret', info: 'Menahan buret tegak lurus di atas meja praktikum dengan alas keramik putih pembantu kontras.', safety: 'Pastikan baut klem kencang dan alas statif stabil menghadap ke depan.' },
+    { id: 'burette', name: 'Buret 50 mL', kind: 'burette', category: 'Volumetrik Presisi', spec: 'Borosilikat 3.3 · Kelas A · 50,00 mL (skala 0,10 mL) · Keran PTFE', info: 'Mengukur volume titran yang dialirkan secara akurat hingga dua angka di belakang koma.', safety: 'Klem dengan hati-hati; periksa kelancaran dan kerapatan keran sebelum pengisian.' },
+    { id: 'flask', name: 'Erlenmeyer 250 mL', kind: 'flask', category: 'Wadah Reaksi', spec: 'Kaca borosilikat 250 mL · Leher sempit mudah digoyang', info: 'Wadah sampel HCl selama titrasi; bentuk kerucut meminimalkan risiko tumpah saat labu digoyang.', safety: 'Periksa retak sebelum digunakan. Goyang perlahan tanpa mengangkat Erlenmeyer dari meja.' },
+    { id: 'pipette', name: 'Pipet 25 mL & propipet', kind: 'pipette', category: 'Volumetrik Presisi', spec: 'Pipet gondok 25,00 mL (±0,03 mL) · Bola hisap 3 katup', info: 'Memindahkan tepat 25,00 mL sampel analit dengan presisi analitik tinggi (satu garis tanda batas).', safety: 'Gunakan propipet; dilarang memipet dengan mulut. Bersihkan tetesan di ujung luar pipet.' },
+    { id: 'funnel', name: 'Corong kaca', kind: 'funnel', category: 'Alat Bantu', spec: 'Kaca borosilikat Ø 50 mm · Batang pendek', info: 'Membantu memasukkan titran NaOH ke mulut buret tanpa tumpah atau tercecer.', safety: 'Angkat sedikit saat menuang agar udara keluar; wajib dilepas sebelum pembacaan awal buret.' },
+    { id: 'waste', name: 'Gelas limbah 250 mL', kind: 'beaker', category: 'Pengelolaan Limbah', spec: 'Gelas piala Griffin 250 mL · Pyrex tahan kimia', info: 'Menampung larutan pembilas, kondisioner, dan cairan buangan awal dari ujung buret.', safety: 'Pisahkan limbah asam-basa sesuai petunjuk keselamatan praktikum.' },
+    { id: 'naoh', name: 'NaOH 0,100 M', kind: 'bottle', category: 'Titran Basa', spec: 'Natrium hidroksida standar 0,100 M · Baku sekunder', info: 'Titran basa kuat dengan konsentrasi telah dibakukan untuk menetralkan asam analit.', safety: 'Basa kuat korosif; hindari kontak kulit dan mata. Segera bilas air mengalir jika terkena.' },
+    { id: 'hcl', name: 'HCl (Sampel)', kind: 'bottle', category: 'Sampel Analit', spec: 'Asam klorida encer · Konsentrasi belum diketahui', info: 'Larutan analit yang akan dicari nilai molaritas pastinya melalui proses titrasi.', safety: 'Hindari kontak langsung; wajib kenakan APD lengkap sebelum membuka botol sampel.' },
+    { id: 'indicator', name: 'Fenolftalein (PP)', kind: 'bottle', category: 'Indikator pH', spec: 'Larutan 1% dlm etanol · Trayek pH 8,2–10,0', info: 'Indikator sintetis; tidak berwarna pada lingkungan asam dan berubah pink pucat di titik akhir.', safety: 'Gunakan 2–3 tetes. Larutan berbasis alkohol dapat mudah menguap.' },
+    { id: 'water', name: 'Air deionisasi', kind: 'bottle', category: 'Pelarut / Pembilas', spec: 'Aquades murni · Botol semprot PE 500 mL', info: 'Air bebas ion mineral untuk membilas dinding Erlenmeyer agar analit turun ke larutan tanpa mengubah mol asam.', safety: 'Bukan air minum. Hindari menyentuhkan moncong botol ke dinding alat agar tetap steril.' },
+    { id: 'tube', name: 'Tabung reaksi', kind: 'burette', category: 'Pengecoh / Non-analitik', spec: 'Kaca soda-lime 15×150 mm · Uji kualitatif', info: 'Wadah reaksi skala kecil untuk pengamatan kualitatif; tidak memiliki skala volume analitik.', safety: 'Tidak diperlukan pada percobaan titrasi kuantitatif ini.' },
+    { id: 'cylinder', name: 'Gelas ukur 100 mL', kind: 'beaker', category: 'Pengecoh / Non-analitik', spec: 'Kaca borosilikat 100 mL · Toleransi ±1,0 mL', info: 'Mengukur volume perkiraan kasar; tidak memenuhi standar presisi analitik titrasi.', safety: 'Jangan menggantikan pipet volumetrik dengan gelas ukur untuk mengukur sampel.' }
 ];
 export const steps = ['Kenakan seluruh APD', 'Pasang statif dan buret', 'Kondisikan buret dengan NaOH', 'Isi buret dan buang gelembung', 'Lepas corong; catat volume awal', 'Pipet 25,00 mL HCl', 'Tambahkan fenolftalein', 'Tempatkan labu di bawah buret', 'Titrasi hingga pink pucat menetap', 'Baca meniskus dan hitung hasil'];
 export const targets: Record<string, [number, number, number]> = { stand: [-.65, .87, 0], burette: [-.37, 1.50, 0], flask: [-.37, .87, 0], funnel: [-.37, 3.18, 0] };
