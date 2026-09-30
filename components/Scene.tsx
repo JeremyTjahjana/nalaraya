@@ -188,7 +188,21 @@ function Item({obj,state,dispatch,select,selected,cameraMode,onInteract,modalOpe
 
 function Room(){return <group><mesh position={[0,-.1,0]}><boxGeometry args={[8,.15,6]}/><meshStandardMaterial color="#eeeee7"/></mesh><mesh position={[0,1.4,-2.6]}><boxGeometry args={[8,3,.1]}/><meshStandardMaterial color="#e0e3da"/></mesh><mesh position={[-3.8,1.4,0]}><boxGeometry args={[.1,3,5.2]}/><meshStandardMaterial color="#d6dcd3"/></mesh><mesh position={[0,.75,0]}><boxGeometry args={[6.8,.2,3.6]}/><meshStandardMaterial color="#e0d1b3"/></mesh><mesh position={[0,.64,0]}><boxGeometry args={[6.8,.06,3.6]}/><meshStandardMaterial color="#6b736a"/></mesh>{[-3,3].flatMap(x=>[-1.4,1.4].map(z=><mesh key={`${x}${z}`} position={[x,.3,z]}><boxGeometry args={[.1,.7,.1]}/><meshStandardMaterial color="#59665c"/></mesh>))}<mesh position={[1.8,1.6,-2.48]}><boxGeometry args={[2.1,1,.06]}/><meshStandardMaterial color="#f7f9ee"/></mesh><mesh position={[-2.9,.88,1.25]}><boxGeometry args={[.55,.04,.35]}/><meshStandardMaterial color="#f6f4e8"/></mesh></group>}
 function Particles(){const ref=useRef<THREE.Points>(null);const positions=useMemo(()=>{const values=new Float32Array(90);for(let i=0;i<30;i++){values[i*3]=(Math.random()-.5)*6;values[i*3+1]=.9+Math.random()*2;values[i*3+2]=-1.8+Math.random()*3.6}return values},[]);useFrame((_,delta)=>{if(ref.current)ref.current.rotation.y+=delta*.018});return <points ref={ref}><bufferGeometry><bufferAttribute attach="attributes-position" args={[positions,3]}/></bufferGeometry><pointsMaterial color="#9fb4aa" size={.035} transparent opacity={.48} sizeAttenuation/></points>}
-function CameraReset({resetKey}:{resetKey:number}){const {camera,invalidate}=useThree();useEffect(()=>{camera.position.set(6.8,6.2,7.8);camera.lookAt(0,1.35,0);if('zoom' in camera){camera.zoom=66;camera.updateProjectionMatrix()}invalidate()},[camera,invalidate,resetKey]);return null}
+function CameraReset({resetKey}:{resetKey:number}){
+ const {camera,size,invalidate}=useThree();
+ useEffect(()=>{
+  camera.position.set(6.8,6.2,7.8);
+  camera.lookAt(0,1.35,0);
+  if('zoom' in camera){
+   const isNarrow=size.width<420;
+   const isMobile=size.width<640;
+   camera.zoom=isNarrow?48:isMobile?54:66;
+   camera.updateProjectionMatrix();
+  }
+  invalidate();
+ },[camera,size.width,invalidate,resetKey]);
+ return null;
+}
 
 export default function Scene({state,dispatch,selected,select,cameraMode,resetKey,onInteract,modalOpen}:{state:State;dispatch:React.Dispatch<Action>;selected:string|null;select:(id:string)=>void;cameraMode:boolean;resetKey:number;onInteract:()=>void;modalOpen?:boolean}){
  const snapIds=state.step===1?['stand','burette']:state.step===7?['flask']:[];
@@ -202,7 +216,7 @@ export default function Scene({state,dispatch,selected,select,cameraMode,resetKe
   <Room/>
   {state.mode==='latihan'&&snapIds.map(id=>{const p=targets[id];return <mesh key={id} position={[p[0],.868,p[2]]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.28,.3,32]}/><meshBasicMaterial color="#bc5757" transparent opacity={.6}/></mesh>})}
   {state.objects.map(obj=><Item key={obj.id} obj={obj} state={state} dispatch={dispatch} selected={selected===obj.id} select={select} cameraMode={cameraMode} onInteract={onInteract} modalOpen={modalOpen}/>)}
-  <OrbitControls makeDefault enableRotate={false} enablePan={cameraMode} enableZoom minZoom={45} maxZoom={120} target={[0,1.35,0]} mouseButtons={{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_PAN}}/>
+  <OrbitControls makeDefault enableRotate={false} enablePan={cameraMode} enableZoom minZoom={35} maxZoom={120} target={[0,1.35,0]} mouseButtons={{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_PAN}}/>
  </Canvas>
 }
 
