@@ -100,8 +100,13 @@ export default function Lab(){
 
  return <div className="lab-shell" onPointerDown={unlockAudio}>
   <header className="lab-header">
-   <Logo compact/>
-   <div><strong>Titrasi asam–basa</strong><small>{mode==='ujian'?'Ujian mandiri':'Latihan terpandu'}</small></div>
+   <div className="lab-brand-group">
+    <Logo compact/>
+    <div className="lab-title-wrap">
+     <h1 className="lab-title">Titrasi asam–basa</h1>
+     <span className="lab-mode-badge">{mode==='ujian'?'Ujian mandiri':'Latihan terpandu'}</span>
+    </div>
+   </div>
    <div className="lab-progress"><label htmlFor="progress">Progres <span>{progress}%</span></label><progress id="progress" max={100} value={progress}/></div>
    {mode==='ujian'&&<time className={state.remaining<60?'chemistry':''}>{Math.floor(state.remaining/60).toString().padStart(2,'0')}:{(state.remaining%60).toString().padStart(2,'0')}</time>}
    <button className="sound-toggle" aria-label={muted?'Aktifkan suara':'Matikan suara'} aria-pressed={muted} title={muted?'Suara mati':'Suara aktif'} onClick={toggleSound}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/>{muted?<path d="m17 9 4 6m0-6-4 6"/>:<path d="M16 9c1.5 1.7 1.5 4.3 0 6m2-8c2.8 2.8 2.8 7.2 0 10"/>}</svg></button>
