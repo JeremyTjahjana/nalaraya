@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -17,17 +17,17 @@ const hazardMeta={
  irritant:{src:'/ghs/exclamation.svg',label:'Iritan'},
 } as const;
 
-const stepDetails=[
- 'Tekan tombol Kenakan pada kacamata keselamatan, jas laboratorium, dan sarung tangan. Ketiganya harus terpasang sebelum bahan kimia digunakan.',
- 'Seret statif ke lingkaran panduan. Setelah terpasang, seret buret ke klem sampai keduanya terkunci pada posisi yang benar.',
- 'Letakkan gelas limbah di meja, lalu seret botol NaOH mendekati buret. Bilasan pertama akan ditampung sebagai limbah.',
- 'Seret corong ke mulut buret. Setelah corong terpasang, seret botol NaOH ke buret sekali lagi untuk mengisi buret dan membuang gelembung.',
- 'Seret corong menjauh dari buret. Corong harus dilepas agar pembacaan volume awal tidak berubah oleh tetesan sisa.',
- 'Seret pipet ke botol HCl untuk mengambil sampel, kemudian seret pipet yang sudah terisi ke Erlenmeyer.',
- 'Seret botol fenolftalein ke Erlenmeyer. Indikator akan membantu menunjukkan titik akhir titrasi.',
- 'Seret Erlenmeyer ke lingkaran tepat di bawah ujung buret sampai posisinya sesuai.',
- 'Gunakan kontrol pada jendela titrasi. Tambahkan NaOH dalam 5 mL saat masih jauh dari titik akhir, lalu beralih ke 1 mL atau 0,5 mL. Aduk setelah setiap penambahan.',
- 'Saat warna berubah menjadi merah muda pucat, tekan Selesaikan titrasi. Baca bagian bawah meniskus sejajar dengan mata, lalu catat volume awal, volume akhir, dan hasil perhitungan.'
+const stepDetails = [
+  "Tekan tombol Kenakan pada kacamata keselamatan, jas laboratorium, dan sarung tangan. Ketiganya harus terpasang sebelum bahan kimia digunakan.",
+  "Seret statif ke lingkaran panduan. Setelah terpasang, seret buret ke klem sampai keduanya terkunci pada posisi yang benar.",
+  "Letakkan gelas limbah di meja, lalu seret botol NaOH mendekati buret. Bilasan pertama akan ditampung sebagai limbah.",
+  "Seret corong ke mulut buret. Setelah corong terpasang, seret botol NaOH ke buret sekali lagi untuk mengisi buret dan membuang gelembung.",
+  "Seret corong menjauh dari buret. Corong harus dilepas agar pembacaan volume awal tidak berubah oleh tetesan sisa.",
+  "Seret pipet ke botol HCl untuk mengambil sampel, kemudian seret pipet yang sudah terisi ke Erlenmeyer.",
+  "Seret botol fenolftalein ke Erlenmeyer. Indikator akan membantu menunjukkan titik akhir titrasi.",
+  "Seret Erlenmeyer ke lingkaran tepat di bawah ujung buret sampai posisinya sesuai.",
+  "Gunakan kontrol pada jendela titrasi. Tambahkan NaOH dalam 5 mL saat masih jauh dari titik akhir, lalu beralih ke 1 mL atau 0,5 mL. Aduk setelah setiap penambahan.",
+  "Saat warna berubah menjadi merah muda pucat, tekan Selesaikan titrasi. Baca bagian bawah meniskus sejajar dengan mata, lalu catat volume awal, volume akhir, dan hasil perhitungan.",
 ];
 
 export default function Lab(){
@@ -50,32 +50,39 @@ export default function Lab(){
  const lastStep=useRef(0);
  const tipHideTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
 
- useEffect(()=>{
-  start.current=Date.now();
-  const interval=setInterval(()=>dispatch({type:'tick',value:600-Math.floor((Date.now()-start.current)/1000)}),500);
-  return()=>clearInterval(interval);
- },[]);
+  useEffect(() => {
+    start.current = Date.now();
+    const interval = setInterval(
+      () =>
+        dispatch({
+          type: "tick",
+          value: 600 - Math.floor((Date.now() - start.current) / 1000),
+        }),
+      500,
+    );
+    return () => clearInterval(interval);
+  }, []);
 
- useEffect(()=>{
-  if(state.step!==8||!state.mixed||!endpoint(state))return;
-  const id=setInterval(()=>dispatch({type:'stable'}),1000);
-  return()=>clearInterval(id);
- },[state.step,state.mixed,state.volume,state.indicator]);
+  useEffect(() => {
+    if (state.step !== 8 || !state.mixed || !endpoint(state)) return;
+    const id = setInterval(() => dispatch({ type: "stable" }), 1000);
+    return () => clearInterval(id);
+  }, [state.step, state.mixed, state.volume, state.indicator]);
 
- useEffect(()=>{
-  const latest=state.log.at(-1);
-  if(!latest||latest.at===lastLogAt.current)return;
-  const advanced=state.step>lastStep.current;
-  playSound(state.feedback?'error':advanced?'stage':'confirm');
-  lastLogAt.current=latest.at;
-  lastStep.current=state.step;
- },[state.log,state.step,state.feedback]);
+  useEffect(() => {
+    const latest = state.log.at(-1);
+    if (!latest || latest.at === lastLogAt.current) return;
+    const advanced = state.step > lastStep.current;
+    playSound(state.feedback ? "error" : advanced ? "stage" : "confirm");
+    lastLogAt.current = latest.at;
+    lastStep.current = state.step;
+  }, [state.log, state.step, state.feedback]);
 
- useEffect(()=>{
-  if(!endpoint(state)||soundPlayed.current)return;
-  soundPlayed.current=true;
-  playSound('endpoint');
- },[state.volume,state.indicator]);
+  useEffect(() => {
+    if (!endpoint(state) || soundPlayed.current) return;
+    soundPlayed.current = true;
+    playSound("endpoint");
+  }, [state.volume, state.indicator]);
 
  useEffect(()=>{if(state.step===8){setTitrationOpen(true);select(null)}},[state.step]);
 
@@ -94,9 +101,9 @@ export default function Lab(){
  function toggleSound(){if(muted){setMuted(false);playSound('confirm',true)}else{playSound('touch',true);setMuted(true)}}
  function reset(){dispatch({type:'reset'});select(null);start.current=Date.now();soundPlayed.current=false;lastLogAt.current=0;lastStep.current=0;setTitrationOpen(false);setAnswers({initial:'',final:'',molarity:''});playSound('touch')}
 
- const item=tools.find(tool=>tool.id===preview)!;
- const progress=state.finished?100:Math.round(state.step/10*100);
- if(state.finished)return <Results state={state} reset={reset}/>;
+  const item = tools.find((tool) => tool.id === preview)!;
+  const progress = state.finished ? 100 : Math.round((state.step / 10) * 100);
+  if (state.finished) return <Results state={state} reset={reset} />;
 
  return <div className="lab-shell" onPointerDown={unlockAudio}>
   <header className="lab-header">
@@ -172,7 +179,42 @@ function Results({state,reset}:{state:ReturnType<typeof initial>;reset:()=>void}
  </main>;
 }
 
-function Meniscus({value,label}:{value:number;label:string}){
- const base=Math.floor(value);const y=30+(value-base)*120;
- return <figure><figcaption>{label}</figcaption><svg viewBox="0 0 130 180" role="img" aria-label={`${label}, skala buret ${base} sampai ${base+1} mL`}><path d={`M35 ${y-8} Q55 ${y+8} 75 ${y-8} L75 170 L35 170Z`} fill="#d6e5e1"/><path d={`M35 ${y-8} Q55 ${y+8} 75 ${y-8}`} fill="none" stroke="#293f3c" strokeWidth="2"/><path d="M35 10V170M75 10V170" stroke="#778983"/>{Array.from({length:11},(_,index)=><g key={index}><path d={`M75 ${30+index*12}h${index%5===0?16:9}`} stroke="#222"/>{index%5===0&&<text x="96" y={34+index*12} fontSize="11">{(base+index/10).toFixed(1)}</text>}</g>)}</svg></figure>;
+function Meniscus({ value, label }: { value: number; label: string }) {
+  const base = Math.floor(value);
+  const y = 30 + (value - base) * 120;
+  return (
+    <figure>
+      <figcaption>{label}</figcaption>
+      <svg
+        viewBox="0 0 130 180"
+        role="img"
+        aria-label={`${label}, skala buret ${base} sampai ${base + 1} mL`}
+      >
+        <path
+          d={`M35 ${y - 8} Q55 ${y + 8} 75 ${y - 8} L75 170 L35 170Z`}
+          fill="#d6e5e1"
+        />
+        <path
+          d={`M35 ${y - 8} Q55 ${y + 8} 75 ${y - 8}`}
+          fill="none"
+          stroke="#293f3c"
+          strokeWidth="2"
+        />
+        <path d="M35 10V170M75 10V170" stroke="#778983" />
+        {Array.from({ length: 11 }, (_, index) => (
+          <g key={index}>
+            <path
+              d={`M75 ${30 + index * 12}h${index % 5 === 0 ? 16 : 9}`}
+              stroke="#222"
+            />
+            {index % 5 === 0 && (
+              <text x="96" y={34 + index * 12} fontSize="11">
+                {(base + index / 10).toFixed(1)}
+              </text>
+            )}
+          </g>
+        ))}
+      </svg>
+    </figure>
+  );
 }
