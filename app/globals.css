@@ -5332,6 +5332,55 @@ button,
   align-items: start
 }
 
+.equipment-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.equipment-counter-badge {
+  font-size: 14px;
+  font-weight: 500;
+  color: #55625c;
+  background: #f0f4f2;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #dbe3e0;
+}
+
+.equipment-category-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.category-tab-btn {
+  padding: 6px 14px;
+  font-size: 13.5px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #dbe3e0;
+  color: #4a5752;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.category-tab-btn:hover {
+  border-color: #92a49d;
+  color: #1a2521;
+}
+
+.category-tab-btn.active {
+  background: #1a2e26;
+  color: #ffffff;
+  border-color: #1a2e26;
+  font-weight: 600;
+}
+
 .equipment-picker {
   display: grid;
   gap: 6px;
@@ -5347,7 +5396,67 @@ button,
   text-align: left;
   background: #fff;
   border: 1px solid transparent;
-  font-size: 16px
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viewed-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #276749;
+  background: #e6fffa;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-left: 8px;
+}
+
+.equipment-copy-header {
+  margin-bottom: 8px;
+}
+
+.equipment-category-pill {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #782127;
+  background: #fff0f1;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.course-next-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.next-lab-btn {
+  background: #184e38 !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(24, 78, 56, 0.25);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.next-lab-btn:hover {
+  background: #133f2d !important;
+  transform: translateY(-1px);
+}
+
+.catalog-status.status-passed {
+  background: #e6f9f0;
+  color: #185a3c;
+  font-weight: 700;
+  border: 1px solid #b7ebd1;
 }
 
 .equipment-picker button:hover {

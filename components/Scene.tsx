@@ -10,6 +10,99 @@ function Glass({ children }: { children: React.ReactNode }) {
   return <group>{children}</group>;
 }
 
+function FlaskLiquid({ pink, over }: { pink: boolean; over: boolean }) {
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  const targetColor = useMemo(() => {
+    if (over) return new THREE.Color("#c9287a");
+    if (pink) return new THREE.Color("#f5b5cc");
+    return new THREE.Color("#e5eee8");
+  }, [pink, over]);
+
+  useFrame((_, delta) => {
+    if (matRef.current) {
+      matRef.current.color.lerp(targetColor, Math.min(1, delta * 3.5));
+    }
+  });
+
+  return (
+    <mesh position={[0, 0.11, 0]}>
+      <cylinderGeometry args={[0.09, 0.176, 0.2, 18]} />
+      <meshStandardMaterial
+        ref={matRef}
+        color={pink ? "#f5b5cc" : "#e5eee8"}
+        transparent
+        opacity={0.85}
+        roughness={0.1}
+      />
+    </mesh>
+  );
+}
+
+function BuretteLiquidAndValve({
+  filled,
+  volume = 0,
+  dosing = false,
+  glass,
+}: {
+  filled: boolean;
+  volume?: number;
+  dosing?: boolean;
+  glass: React.ReactNode;
+}) {
+  const colRef = useRef<THREE.Mesh>(null);
+  const valveRef = useRef<THREE.Group>(null);
+  const currentVol = useRef(volume);
+
+  useFrame((_, delta) => {
+    if (filled && colRef.current) {
+      currentVol.current = THREE.MathUtils.lerp(
+        currentVol.current,
+        volume,
+        Math.min(1, delta * 4)
+      );
+      const fraction = Math.min(1, Math.max(0, currentVol.current / 50));
+      const height = Math.max(0.06, 1.18 * (1 - fraction * 0.92));
+      colRef.current.scale.set(1, height / 1.18, 1);
+      colRef.current.position.y = 0.82 - (1.18 - height) / 2;
+    }
+    if (valveRef.current) {
+      const targetAngle = dosing ? Math.PI / 2 : 0;
+      valveRef.current.rotation.x = THREE.MathUtils.lerp(
+        valveRef.current.rotation.x,
+        targetAngle,
+        Math.min(1, delta * 12)
+      );
+    }
+  });
+
+  return (
+    <>
+      {filled && (
+        <mesh ref={colRef} position={[0, 0.82, 0]}>
+          <cylinderGeometry args={[0.025, 0.025, 1.18, 14]} />
+          <meshStandardMaterial color="#a7c8c6" transparent opacity={0.62} />
+        </mesh>
+      )}
+      {/* Valve / stopcock casing */}
+      <mesh position={[0, 0.19, 0]}>
+        <cylinderGeometry args={[0.038, 0.038, 0.09, 12]} />
+        {glass}
+      </mesh>
+      {/* Animated Stopcock valve handle in laboratory red */}
+      <group ref={valveRef} position={[0, 0.19, 0]}>
+        <mesh position={[0.04, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.018, 0.018, 0.14, 10]} />
+          <meshStandardMaterial color="#b72d2d" roughness={0.35} />
+        </mesh>
+        <mesh position={[0.095, 0, 0]}>
+          <boxGeometry args={[0.02, 0.07, 0.032]} />
+          <meshStandardMaterial color="#b72d2d" roughness={0.35} />
+        </mesh>
+      </group>
+    </>
+  );
+}
+
 export function Model({
   id,
   pink = false,
@@ -17,6 +110,8 @@ export function Model({
   over = false,
   loaded = false,
   active = false,
+  volume = 0,
+  dosing = false,
 }: {
   id: string;
   pink?: boolean;
@@ -24,6 +119,8 @@ export function Model({
   over?: boolean;
   loaded?: boolean;
   active?: boolean;
+  volume?: number;
+  dosing?: boolean;
 }) {
   const flaskLathe = useMemo(
     () =>
@@ -156,17 +253,7 @@ export function Model({
           <torusGeometry args={[0.068, 0.007, 8, 20]} />
           <meshStandardMaterial color="#d4e8e4" roughness={0.1} />
         </mesh>
-        {filled && (
-          <mesh position={[0, 0.11, 0]}>
-            <cylinderGeometry args={[0.09, 0.176, 0.2, 18]} />
-            <meshStandardMaterial
-              color={over ? "#c9287a" : pink ? "#f5b5cc" : "#e5eee8"}
-              transparent
-              opacity={0.85}
-              roughness={0.1}
-            />
-          </mesh>
-        )}
+        {filled && <FlaskLiquid pink={pink} over={over} />}
         <mesh position={[0, 0.28, 0.11]}>
           <boxGeometry args={[0.08, 0.02, 0.01]} />
           <meshStandardMaterial color="#ffffff" opacity={0.9} transparent />
@@ -243,11 +330,12 @@ export function Model({
           <torusGeometry args={[0.036, 0.007, 8, 24]} />
           <meshStandardMaterial color="#b9d6d1" roughness={0.1} />
         </mesh>
-        {/* Liquid column inside burette */}
-        {filled && <mesh position={[0, 0.82, 0]}>
-          <cylinderGeometry args={[0.025, 0.025, 1.18, 14]} />
-          <meshStandardMaterial color="#a7c8c6" transparent opacity={0.62} />
-        </mesh>}
+        <BuretteLiquidAndValve
+          filled={filled}
+          volume={volume}
+          dosing={dosing}
+          glass={glass}
+        />
         {/* Fine graduation markings along the burette */}
         {Array.from({ length: 21 }, (_, i) => (
           <mesh key={i} position={[0, 0.25 + i * 0.059, 0.038]}>
@@ -255,20 +343,6 @@ export function Model({
             <meshBasicMaterial color="#263b35" />
           </mesh>
         ))}
-        {/* Valve / stopcock casing */}
-        <mesh position={[0, 0.19, 0]}>
-          <cylinderGeometry args={[0.038, 0.038, 0.09, 12]} />
-          {glass}
-        </mesh>
-        {/* Stopcock valve handle in laboratory red */}
-        <mesh position={[0.04, 0.19, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.018, 0.018, 0.14, 10]} />
-          <meshStandardMaterial color="#b72d2d" roughness={0.35} />
-        </mesh>
-        <mesh position={[0.095, 0.19, 0]}>
-          <boxGeometry args={[0.02, 0.07, 0.032]} />
-          <meshStandardMaterial color="#b72d2d" roughness={0.35} />
-        </mesh>
         {/* Tapered dispensing tip */}
         <mesh position={[0, 0.08, 0]}>
           <cylinderGeometry args={[0.018, 0.007, 0.14, 10]} />
@@ -568,6 +642,7 @@ function LiquidMotion({ kind, state, reduced }: { kind: LiquidFeedback; state: S
   const draining = useRef<THREE.Group>(null);
   const bottle = useRef<THREE.Group>(null);
   const drops = useRef<THREE.Group>(null);
+  const ripple = useRef<THREE.Mesh>(null);
   const elapsed = useRef(0);
   const flask = state.objects.find(o => o.id === 'flask')?.pos || targets.flask;
   const isBottle = kind === 'rinse' || kind === 'fill';
@@ -587,12 +662,21 @@ function LiquidMotion({ kind, state, reduced }: { kind: LiquidFeedback; state: S
       group.current.position.x = Math.sin(elapsed.current * 9) * .055;
       group.current.position.z = Math.cos(elapsed.current * 9) * .055;
       group.current.rotation.z = Math.sin(elapsed.current * 9) * .06;
+      group.current.rotation.x = Math.cos(elapsed.current * 9) * .04;
     }
     drops.current?.children.forEach((drop, i) => {
-      const phase = reduced ? i / 5 : (elapsed.current * 1.6 + i / 5) % 1;
-      drop.position.y = kind === 'aspirate' ? phase * height : (1 - phase) * height;
-      drop.scale.setScalar(.8 + Math.sin(phase * Math.PI) * .3);
+      const phase = reduced ? i / 5 : (elapsed.current * 1.8 + i / 5) % 1;
+      const easedPhase = phase * phase;
+      drop.position.y = kind === 'aspirate' ? phase * height : (1 - easedPhase) * height;
+      drop.scale.setScalar(.8 + Math.sin(phase * Math.PI) * .35);
     });
+    if (ripple.current) {
+      const r = (elapsed.current * 2.2) % 1;
+      ripple.current.scale.setScalar(0.7 + r * 1.6);
+      if (ripple.current.material && 'opacity' in ripple.current.material) {
+        (ripple.current.material as THREE.Material).opacity = Math.max(0, 0.5 * (1 - r));
+      }
+    }
   });
   return <>
     {kind === 'rinse' && <group ref={draining} visible={false} position={[targets.burette[0], .87, targets.burette[2]]}>
@@ -600,13 +684,13 @@ function LiquidMotion({ kind, state, reduced }: { kind: LiquidFeedback; state: S
       <mesh position={[0, .43, 0]}><cylinderGeometry args={[.012, .018, .14, 12]} /><meshStandardMaterial color="#68aabc" transparent opacity={.7} /></mesh>
     </group>}
     <group ref={pouring} position={[target[0], target[1] + (kind === 'swirl' ? 0 : mouth), target[2]]}>
-      {kind === 'swirl' ? <group ref={group}><Model id="flask" filled pink={state.volume >= 24.8} /></group> : <>
+      {kind === 'swirl' ? <group ref={group}><Model id="flask" filled pink={state.volume >= 24.8} over={state.volume > 25.0} /></group> : <>
         {isBottle && <group ref={bottle} position={[0, height, 0]} rotation={[0, 0, -2.05]}><group position={[0, -.5, 0]}><Model id="naoh" active /></group></group>}
         {isPipette && <group position={[0, height, 0]}><Model id="pipette" active loaded /></group>}
         {kind === 'indicator' && <group position={[0, height + .13, 0]}><mesh><cylinderGeometry args={[.016, .008, .28, 12]} /><meshStandardMaterial color="#b9dcdf" transparent opacity={.8} /></mesh><mesh position={[0, .2, 0]}><capsuleGeometry args={[.04, .1, 6, 12]} /><meshStandardMaterial color="#353c39" /></mesh></group>}
         {(isBottle || kind === 'transfer') && <mesh position={[0, height / 2, 0]}><cylinderGeometry args={[.012, .018, height, 12]} /><meshStandardMaterial color="#68aabc" transparent opacity={.65} /></mesh>}
-        <group ref={drops}>{Array.from({ length: 5 }, (_, i) => <mesh key={i} scale={[1, 1.4, 1]}><sphereGeometry args={[kind === 'dose' ? .017 : .023, 10, 8]} /><meshStandardMaterial color="#60a8be" transparent opacity={.85} /></mesh>)}</group>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .015, 0]}><circleGeometry args={[.055, 20]} /><meshBasicMaterial color="#83c3d0" transparent opacity={.45} side={THREE.DoubleSide} /></mesh>
+        <group ref={drops}>{Array.from({ length: 5 }, (_, i) => <mesh key={i} scale={[1, 1.4, 1]}><sphereGeometry args={[kind === 'dose' ? .017 : .023, 10, 8]} /><meshStandardMaterial color={kind === 'dose' && state.volume >= 24.8 ? "#f3a5bf" : "#60a8be"} transparent opacity={.85} /></mesh>)}</group>
+        <mesh ref={ripple} rotation={[-Math.PI / 2, 0, 0]} position={[0, .015, 0]}><circleGeometry args={[.055, 20]} /><meshBasicMaterial color={state.volume >= 24.8 ? "#f3a5bf" : "#83c3d0"} transparent opacity={.45} side={THREE.DoubleSide} /></mesh>
       </>}
     </group></>;
 }
@@ -621,6 +705,7 @@ function Item({
   onInteract,
   onAction,
   modalOpen,
+  dosing = false,
 }: {
   obj: State["objects"][number];
   state: State;
@@ -631,11 +716,36 @@ function Item({
   onInteract: () => void;
   onAction: (kind: WorldSound) => void;
   modalOpen?: boolean;
+  dosing?: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const dragging = useRef(false);
   const lastPos = useRef<[number, number, number] | null>(null);
+  const itemGroup = useRef<THREE.Group>(null);
+  const currentPos = useRef(new THREE.Vector3(obj.pos[0], obj.pos[1] + (obj.locked ? 0 : 0.28), obj.pos[2]));
+  const targetPos = useMemo(() => new THREE.Vector3(...obj.pos), [obj.pos]);
+  const isSpawned = useRef(false);
   const { raycaster, invalidate } = useThree();
+
+  useEffect(() => {
+    if (!isSpawned.current) {
+      if (!obj.locked) {
+        currentPos.current.set(obj.pos[0], obj.pos[1] + 0.28, obj.pos[2]);
+      }
+      isSpawned.current = true;
+    }
+  }, [obj.locked, obj.pos]);
+
+  useFrame((_, delta) => {
+    if (!itemGroup.current) return;
+    if (dragging.current) {
+      currentPos.current.copy(targetPos);
+      itemGroup.current.position.copy(targetPos);
+    } else {
+      currentPos.current.lerp(targetPos, Math.min(1, delta * 14));
+      itemGroup.current.position.copy(currentPos.current);
+    }
+  });
   const plane = useMemo(
     () => new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.87),
     [],
@@ -755,6 +865,7 @@ function Item({
   }
   return (
     <group
+      ref={itemGroup}
       position={obj.pos}
       onPointerOver={(e) => {
         e.stopPropagation();
@@ -777,6 +888,9 @@ function Item({
           id={obj.id}
           filled={obj.id === 'burette' ? state.step >= 4 : obj.id === 'waste' ? state.step >= 3 : state.step >= 6}
           pink={state.indicator && state.volume >= 24.8}
+          over={state.indicator && state.volume > 25.0}
+          volume={state.volume}
+          dosing={dosing}
           loaded={obj.id === "pipette" && state.pipetteLoaded}
         />
       </group>
@@ -987,6 +1101,7 @@ export default function Scene({
           onInteract={onInteract}
           onAction={onAction}
           modalOpen={modalOpen}
+          dosing={motion?.kind === 'dose' && obj.id === 'burette'}
         />
       ))}
       <OrbitControls
