@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import {useEffect,useReducer,useRef,useState} from 'react';
 import {endpoint,initial,reducer,score,steps,tools} from '@/lib/lab';
-import HazardLegend from './HazardLegend';
 import Logo from './Logo';
 import {ToolIcon} from './ScienceIcons';
 
@@ -33,7 +32,6 @@ export default function Lab(){
  const [preview,setPreview]=useState('flask');
  const [muted,setMuted]=useState(false);
  const [drawer,setDrawer]=useState<'tools'|'notes'|''>('tools');
- const [showTip,setShowTip]=useState(true);
  const [cameraMode,setCameraMode]=useState(false);
  const [cameraReset,setCameraReset]=useState(0);
  const [titrationOpen,setTitrationOpen]=useState(false);
@@ -79,13 +77,15 @@ export default function Lab(){
  function keepToolTip(){if(tipHideTimer.current)clearTimeout(tipHideTimer.current)}
  function hideToolTip(){keepToolTip();tipHideTimer.current=setTimeout(()=>setToolTip(value=>({...value,visible:false})),220)}
  function showToolTip(event:React.MouseEvent<HTMLButtonElement>,id:string){keepToolTip();const rect=event.currentTarget.getBoundingClientRect();setPreview(id);setToolTip({visible:true,x:rect.right,y:Math.max(92,Math.min(rect.top-26,window.innerHeight-455))})}
- function playSound(kind:'touch'|'confirm'|'stage'|'endpoint'|'dose'|'swirl'|'error'){
-  if(muted)return;
+ type SoundKind='touch'|'confirm'|'stage'|'endpoint'|'dose'|'swirl'|'error'|'clink'|'pour'|'drop';
+ function playSound(kind:SoundKind,force=false){
+  if(muted&&!force)return;
   unlockAudio();
   const ctx=audio.current;if(!ctx)return;
-  const notes={touch:[360],confirm:[520],stage:[620,820],endpoint:[880,1174],dose:[280,340],swirl:[230,300,380],error:[170]}[kind];
-  notes.forEach((frequency,index)=>{const oscillator=ctx.createOscillator();const gain=ctx.createGain();oscillator.type=kind==='error'?'sawtooth':kind==='swirl'?'sine':'triangle';oscillator.frequency.value=frequency;oscillator.connect(gain);gain.connect(ctx.destination);const time=ctx.currentTime+index*.08;gain.gain.setValueAtTime(kind==='touch' ? .035 : .075,time);gain.gain.exponentialRampToValueAtTime(.001,time+((kind==='stage'||kind==='endpoint') ? .55 : .2));oscillator.start(time);oscillator.stop(time+.6)});
+  const notes={touch:[360],confirm:[520],stage:[659,880],endpoint:[880,1174],dose:[920],swirl:[230,300,380],error:[170],clink:[1280,1760],pour:[310,270,230],drop:[940]}[kind];
+  notes.forEach((frequency,index)=>{const oscillator=ctx.createOscillator();const gain=ctx.createGain();oscillator.type=kind==='error'?'sawtooth':kind==='swirl'||kind==='pour'?'sine':kind==='clink'?'square':'triangle';oscillator.frequency.value=frequency;oscillator.connect(gain);gain.connect(ctx.destination);const time=ctx.currentTime+index*(kind==='pour'?.055:.08);gain.gain.setValueAtTime(kind==='touch' ? .035 : kind==='clink'?.035:.075,time);gain.gain.exponentialRampToValueAtTime(.001,time+((kind==='stage'||kind==='endpoint') ? .55 : kind==='pour'?.32:.2));oscillator.start(time);oscillator.stop(time+.6)});
  }
+ function toggleSound(){if(muted){setMuted(false);playSound('confirm',true)}else{playSound('touch',true);setMuted(true)}}
  function reset(){dispatch({type:'reset'});select(null);start.current=Date.now();soundPlayed.current=false;lastLogAt.current=0;lastStep.current=0;setTitrationOpen(false);setAnswers({initial:'',final:'',molarity:''});playSound('touch')}
 
  const item=tools.find(tool=>tool.id===preview)!;
@@ -98,8 +98,8 @@ export default function Lab(){
    <div><strong>Titrasi asam–basa</strong><small>{mode==='ujian'?'Ujian mandiri':'Latihan terpandu'}</small></div>
    <div className="lab-progress"><label htmlFor="progress">Progres <span>{progress}%</span></label><progress id="progress" max={100} value={progress}/></div>
    {mode==='ujian'&&<time className={state.remaining<60?'chemistry':''}>{Math.floor(state.remaining/60).toString().padStart(2,'0')}:{(state.remaining%60).toString().padStart(2,'0')}</time>}
-   <button aria-label={muted?'Aktifkan suara':'Matikan suara'} onClick={()=>setMuted(!muted)}>{muted?'Suara mati':'Suara aktif'}</button>
-   <Link href="/kimia/titrasi">Keluar</Link>
+   <button className="sound-toggle" aria-label={muted?'Aktifkan suara':'Matikan suara'} aria-pressed={muted} title={muted?'Suara mati':'Suara aktif'} onClick={toggleSound}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/>{muted?<path d="m17 9 4 6m0-6-4 6"/>:<path d="M16 9c1.5 1.7 1.5 4.3 0 6m2-8c2.8 2.8 2.8 7.2 0 10"/>}</svg></button>
+   <Link className="lab-exit" href="/kimia/titrasi">Keluar</Link>
   </header>
   <div className="mobile-tabs">
    <button className={`tab-btn${drawer==='tools'?' active':''}`} onClick={()=>setDrawer(drawer==='tools'?'':'tools')}>Alat & Bahan <span className="tab-badge">{state.objects.length}</span></button>
@@ -113,13 +113,13 @@ export default function Lab(){
      <button type="button" className="panel-close-btn" onClick={()=>setDrawer('')} aria-label="Tutup panel">✕</button>
     </div>
     <div className="inventory-list">{tools.filter(tool=>mode==='ujian'||!['tube','cylinder'].includes(tool.id)).map(tool=>{const isPpe=tool.kind==='ppe';const equipped=state.ppe.includes(tool.id);const onTable=state.objects.some(object=>object.id===tool.id);return <button key={tool.id} draggable={!isPpe} className={`${preview===tool.id?'inventory-item active':'inventory-item'}${isPpe?' ppe-item':''}${equipped||onTable?' item-deployed':''}`} onDragStart={event=>{if(isPpe)return;playSound('touch');event.dataTransfer.setData('text/lab-tool',tool.id);event.dataTransfer.effectAllowed='copy';setPreview(tool.id)}} onMouseEnter={event=>showToolTip(event,tool.id)} onMouseLeave={hideToolTip} onFocus={()=>{keepToolTip();setPreview(tool.id);setToolTip({visible:true,x:270,y:110})}} onBlur={hideToolTip} onClick={()=>{setPreview(tool.id);if(isPpe){if(!equipped)dispatch({type:'add',id:tool.id})}else{if(!onTable){playSound('confirm');dispatch({type:'add',id:tool.id});select(tool.id)}else{playSound('touch');select(tool.id)}}}} onKeyDown={event=>{if(!isPpe&&(event.key==='Enter'||event.key===' ')){event.preventDefault();dispatch({type:'add',id:tool.id})}}}><div className="item-icon-box"><ToolIcon id={tool.id} className="item-icon"/></div><div className="item-meta"><span className="item-name">{tool.name}</span><span className="item-category">{tool.category}</span></div><span className={`item-badge${equipped||onTable?' active-badge':''}`}>{isPpe?(equipped?'Dipakai':'Kenakan'):(onTable?'✓ Meja':'⋮⋮ Pasang')}</span></button>})}</div>
-    <div className={`tool-info${toolTip.visible?' visible':''}`} style={{left:toolTip.x,top:toolTip.y}} role="status" onMouseEnter={keepToolTip} onMouseLeave={hideToolTip}><div className="tool-info-copy"><div className="tool-tags"><span>Kenali alat</span><span className="tool-category-badge">{item.category}</span></div><h3>{item.name}</h3><div className="tool-spec-box"><strong>Spesifikasi:</strong> {item.spec}</div><p>{item.info}</p><p className="safety-copy"><strong>Keselamatan</strong>{item.safety}</p>{item.kind==='bottle'&&item.id!=='water'&&<details><summary>Kenali simbol bahaya</summary><HazardLegend/><p>Korosi: cairan mengenai tangan/logam. Tengkorak: toksisitas akut. Ikan/pohon: bahaya lingkungan.</p><p>Label aktual mengikuti SDS produk dan konsentrasinya; simbol tidak otomatis berlaku untuk semua larutan.</p></details>}</div><div className="popover-preview"><Preview id={preview}/><small>Model 3D interaktif · Putar preview</small></div></div>
+    <div className={`tool-info${toolTip.visible?' visible':''}`} style={{left:toolTip.x,top:toolTip.y}} role="status" onMouseEnter={keepToolTip} onMouseLeave={hideToolTip}><div className="tool-info-copy"><div className="tool-tags"><span>Kenali alat</span><span className="tool-category-badge">{item.category}</span></div><h3>{item.name}</h3><div className="tool-spec-box"><strong>Spesifikasi:</strong> {item.spec}</div><p>{item.info}</p><p className="safety-copy"><strong>Keselamatan</strong>{item.safety}</p>{item.kind==='bottle'&&<p className="bottle-hazard"><strong>Label botol simulasi</strong>{item.hazards?.length?item.hazards.map(hazard=>({corrosive:'Korosif',flammable:'Mudah terbakar',irritant:'Iritan'}[hazard])).join(', '):'Tanpa pictogram GHS'} · klasifikasi nyata mengikuti SDS dan konsentrasi produk.</p>}</div><div className="popover-preview"><Preview id={preview}/><small>Model 3D interaktif · Putar preview</small></div></div>
    </aside>
    <main className="lab-center">
     <div className="scene-meta"><span>25,00 mL HCl · NaOH 0,100 M</span></div>
     <div className={`camera-toolbar${cameraMode?' active':''}`}>{mode==='latihan'&&<button className="toolbar-step-btn" title={`Ulangi langkah ${state.step+1}`} onClick={()=>{playSound('touch');select(null);soundPlayed.current=false;dispatch({type:'resetStep'})}}>↺ Reset langkah {state.step+1}</button>}<button aria-pressed={cameraMode} onClick={()=>{playSound('touch');setCameraMode(!cameraMode);select(null)}}>{cameraMode?'Selesai menggeser':'Geser kamera'}</button><button onClick={()=>{playSound('touch');setCameraReset(value=>value+1);setCameraMode(false)}}>Pusatkan</button></div>
     <div className="lab-toast" key={state.log.at(-1)?.at||state.step}><span className={state.feedback?'error':''}/>{state.log.at(-1)?.text||steps[state.step]}</div>
-    <div className={`scene${cameraMode?' camera-active':''}`} onDragOver={event=>{event.preventDefault();event.dataTransfer.dropEffect='copy'}} onDrop={event=>{event.preventDefault();playSound('confirm');const id=event.dataTransfer.getData('text/lab-tool');if(id){dispatch({type:'add',id});select(id)}}}><Scene state={state} dispatch={dispatch} selected={selected} select={select} cameraMode={cameraMode} resetKey={cameraReset} onInteract={()=>playSound('touch')} modalOpen={titrationOpen||state.step===9}/></div>
+    <div className={`scene${cameraMode?' camera-active':''}`} onDragOver={event=>{event.preventDefault();event.dataTransfer.dropEffect='copy'}} onDrop={event=>{event.preventDefault();playSound('confirm');const id=event.dataTransfer.getData('text/lab-tool');if(id){dispatch({type:'add',id});select(id)}}}><Scene state={state} dispatch={dispatch} selected={selected} select={select} cameraMode={cameraMode} resetKey={cameraReset} onInteract={()=>playSound('touch')} onAction={playSound} modalOpen={titrationOpen||state.step===9}/></div>
     <div className="scene-help">{cameraMode?'Tarik area lab untuk menggeser pandangan. Klik “Selesai menggeser” untuk kembali memindahkan alat.':'Kamera terkunci · Seret alat dari panel dan interaksikan langsung di meja · Scroll / cubit untuk zoom'}</div>
     {state.step===8&&!titrationOpen&&<button className="open-titration" onClick={()=>{playSound('touch');select(null);setTitrationOpen(true)}}>Buka kontrol titrasi</button>}
    </main>
@@ -135,12 +135,7 @@ export default function Lab(){
    </aside>
   </div>
   {drawer!==''&&<div className="drawer-backdrop" onClick={()=>setDrawer('')}/>}
-  {showTip&&(
-   <div className="mobile-rotate-tip" role="status">
-    <span>💡 <strong>Tip:</strong> Putar HP ke posisi mendatar (landscape) jika ingin meja lab lebih luas.</span>
-    <button type="button" className="tip-close-btn" onClick={()=>setShowTip(false)} aria-label="Tutup saran">✕</button>
-   </div>
-  )}
+  <div className="portrait-gate" role="status"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="20" y="8" width="24" height="42" rx="3"/><path d="M49 25c6 7 6 17 0 24m3-5-3 5-5-3"/></svg><h2>Putar perangkat ke landscape.</h2><p>Ruang praktikum membutuhkan bidang kerja mendatar agar alat dapat dipindahkan dengan akurat.</p></div>
   {state.step===8&&titrationOpen&&<TitrationDialog state={state} close={()=>setTitrationOpen(false)} dose={value=>{playSound('dose');dispatch({type:'dose',value})}} swirl={()=>{playSound('swirl');dispatch({type:'mix'})}} finish={()=>{playSound(endpoint(state)?'stage':'error');dispatch({type:'finish'})}} resetTitration={()=>{playSound('touch');soundPlayed.current=false;dispatch({type:'resetTitration'})}}/>}
   {state.step===9&&<div className="assessment-overlay"><section className="assessment assessment-split"><div className="meniscus-side"><span className="modal-kicker">Hasil pengukuran</span><h2>Baca meniskus.</h2><p>Gunakan bagian bawah lengkungan cairan dan baca sejajar dengan mata.</p><div className="meniscus-pair"><Meniscus value={.15} label="Pembacaan awal"/><Meniscus value={.15+state.volume} label="Pembacaan akhir"/></div></div><div className="answer-side"><span className="modal-kicker">Uji pemahaman</span><h2>Catat hasilmu.</h2><p>Masukkan pembacaan buret dan hitung konsentrasi sampel.</p><form onSubmit={event=>{event.preventDefault();playSound('stage');dispatch({type:'submit',answers})}}>{[['initial','Volume awal (mL)'],['final','Volume akhir (mL)'],['molarity','Molaritas HCl (M)']].map(([key,label])=><label key={key}>{label}<input required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" value={answers[key as keyof typeof answers]} onChange={event=>setAnswers({...answers,[key]:event.target.value})}/></label>)}<button className="primary" type="submit">Kumpulkan hasil ↗</button></form></div></section></div>}
  </div>;

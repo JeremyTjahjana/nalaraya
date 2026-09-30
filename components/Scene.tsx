@@ -21,16 +21,21 @@ export function Model({id,pink=false,filled=false,over=false,loaded=false}:{id:s
   const canvas=document.createElement('canvas');canvas.width=256;canvas.height=144;
   const context=canvas.getContext('2d');if(!context)return null;
   context.fillStyle='#fffdf7';context.fillRect(0,0,256,144);
-  context.strokeStyle='#c8323b';context.lineWidth=7;context.strokeRect(9,9,52,52);
+  const hazard=tools.find(tool=>tool.id===id)?.hazards?.[0];
+  if(hazard){context.save();context.translate(35,35);context.rotate(Math.PI/4);context.strokeStyle='#c8323b';context.lineWidth=5;context.strokeRect(-21,-21,42,42);context.restore();context.strokeStyle='#171717';context.fillStyle='#171717';context.lineWidth=3;
+   if(hazard==='flammable'){context.beginPath();context.moveTo(35,51);context.bezierCurveTo(18,42,31,30,35,17);context.bezierCurveTo(40,29,51,34,43,47);context.bezierCurveTo(41,50,38,52,35,51);context.fill()}
+   if(hazard==='irritant'){context.fillRect(32,18,6,21);context.beginPath();context.arc(35,47,4,0,Math.PI*2);context.fill()}
+   if(hazard==='corrosive'){context.beginPath();context.moveTo(18,21);context.lineTo(34,28);context.moveTo(38,19);context.lineTo(51,25);context.stroke();context.fillRect(16,43,36,3);context.beginPath();context.arc(29,35,3,0,Math.PI*2);context.arc(43,33,3,0,Math.PI*2);context.fill()}
+  }
   context.fillStyle='#202522';context.font='700 44px sans-serif';
   context.fillText(({naoh:'NaOH',hcl:'HCl',indicator:'PhPh',water:'H₂O'} as Record<string,string>)[id]||id,74,57);
   context.font='22px sans-serif';context.fillStyle='#59615c';
   context.fillText(id==='indicator'?'Indikator':id==='water'?'Deionisasi':'Larutan',74,94);
-  context.fillStyle='#c8323b';context.beginPath();context.arc(35,35,8,0,Math.PI*2);context.fill();
+  if(!hazard){context.fillStyle='#d8dfda';context.beginPath();context.arc(35,35,8,0,Math.PI*2);context.fill()}
   const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
  },[id]);
 
- const glass=<meshPhysicalMaterial color="#ffffff" transmission={0.90} opacity={1} roughness={0.06} metalness={0.02} ior={1.48} thickness={0.06} transparent side={THREE.DoubleSide}/>;
+ const glass=<meshPhysicalMaterial color="#e9fbf8" transmission={0.58} opacity={.78} roughness={0.08} metalness={0} ior={1.46} thickness={0.08} transparent side={THREE.DoubleSide}/>;
  const chrome=<meshStandardMaterial color="#c5cbc7" metalness={0.85} roughness={0.16}/>;
  const darkIron=<meshStandardMaterial color="#2d3330" roughness={0.55} metalness={0.25}/>;
  const whiteTile=<meshStandardMaterial color="#fafaf8" roughness={0.22} metalness={0.04}/>;
@@ -50,28 +55,28 @@ export function Model({id,pink=false,filled=false,over=false,loaded=false}:{id:s
   {/* White titration observation plate directly under burette */}
   <mesh position={[.28,.058,0]}><boxGeometry args={[.32,.006,.32]}/>{whiteTile}</mesh>
   {/* Upright metal rod */}
-  <mesh position={[-.20,1.22,0]}><cylinderGeometry args={[.022,.022,2.44,14]}/>{chrome}</mesh>
-  <mesh position={[-.20,2.44,0]}><sphereGeometry args={[.026,12,8]}/>{chrome}</mesh>
+  <mesh position={[-.20,1.05,0]}><cylinderGeometry args={[.024,.024,2.1,16]}/>{chrome}</mesh>
+  <mesh position={[-.20,2.1,0]}><sphereGeometry args={[.028,12,8]}/>{chrome}</mesh>
   {/* Bosshead / clamp holder */}
-  <mesh position={[-.20,1.55,0]}><boxGeometry args={[.07,.08,.07]}/>{darkIron}</mesh>
-  <mesh position={[-.24,1.55,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.012,.012,.08,8]}/>{darkIron}</mesh>
+  <mesh position={[-.20,1.2,0]}><boxGeometry args={[.075,.085,.075]}/>{darkIron}</mesh>
+  <mesh position={[-.24,1.2,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.013,.013,.08,8]}/>{darkIron}</mesh>
   {/* Extension rod to burette */}
-  <mesh position={[.04,1.55,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.014,.014,.42,8]}/>{chrome}</mesh>
+  <mesh position={[.04,1.2,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.014,.014,.42,10]}/>{chrome}</mesh>
   {/* Dual clamp jaws wrapped around burette position (x = 0.28) */}
-  <mesh position={[.25,1.55,.036]} rotation={[0,.2,0]}><boxGeometry args={[.10,.045,.018]}/><meshStandardMaterial color="#9c3232"/></mesh>
-  <mesh position={[.25,1.55,-.036]} rotation={[0,-.2,0]}><boxGeometry args={[.10,.045,.018]}/><meshStandardMaterial color="#9c3232"/></mesh>
-  <mesh position={[.32,1.55,0]}><boxGeometry args={[.035,.045,.08]}/>{darkIron}</mesh>
+  <mesh position={[.25,1.2,.036]} rotation={[0,.2,0]}><boxGeometry args={[.10,.045,.018]}/><meshStandardMaterial color="#9c3232"/></mesh>
+  <mesh position={[.25,1.2,-.036]} rotation={[0,-.2,0]}><boxGeometry args={[.10,.045,.018]}/><meshStandardMaterial color="#9c3232"/></mesh>
+  <mesh position={[.32,1.2,0]}><boxGeometry args={[.035,.045,.08]}/>{darkIron}</mesh>
  </group>;
 
  if(kind==='burette')return <group>
-  {/* Long slender burette barrel (height 1.64, radius 0.034) */}
-  <mesh position={[0,1.06,0]}><cylinderGeometry args={[.034,.034,1.64,16]}/>{glass}</mesh>
+  {/* 50 mL burette: shorter than the stand, with a narrow calibrated barrel. */}
+  <mesh position={[0,.86,0]}><cylinderGeometry args={[.036,.036,1.28,20]}/>{glass}</mesh>
   {/* Top reinforced rim */}
-  <mesh position={[0,1.88,0]}><torusGeometry args={[.034,.006,8,20]}/><meshStandardMaterial color="#d4e8e4" roughness={.1}/></mesh>
+  <mesh position={[0,1.50,0]}><torusGeometry args={[.036,.007,8,24]}/><meshStandardMaterial color="#b9d6d1" roughness={.1}/></mesh>
   {/* Liquid column inside burette */}
-  <mesh position={[0,.96,0]}><cylinderGeometry args={[.024,.024,1.44,12]}/><meshStandardMaterial color="#a7c8c6" transparent opacity={.58}/></mesh>
+  <mesh position={[0,.82,0]}><cylinderGeometry args={[.025,.025,1.18,14]}/><meshStandardMaterial color="#a7c8c6" transparent opacity={.62}/></mesh>
   {/* Fine graduation markings along the burette */}
-  {Array.from({length:22},(_,i)=><mesh key={i} position={[0,.28+i*.072,.035]}><boxGeometry args={[i%5===0?.055:.030,.004,.003]}/><meshBasicMaterial color="#22332e"/></mesh>)}
+  {Array.from({length:21},(_,i)=><mesh key={i} position={[0,.25+i*.059,.038]}><boxGeometry args={[i%5===0?.06:.032,.004,.003]}/><meshBasicMaterial color="#263b35"/></mesh>)}
   {/* Valve / stopcock casing */}
   <mesh position={[0,.19,0]}><cylinderGeometry args={[.038,.038,.09,12]}/>{glass}</mesh>
   {/* Stopcock valve handle in laboratory red */}
@@ -102,23 +107,28 @@ export function Model({id,pink=false,filled=false,over=false,loaded=false}:{id:s
   <mesh position={[0,.06,0]}><cylinderGeometry args={[.016,.012,.22,12]}/>{glass}</mesh>
  </group>;
 
- if(id==='goggles')return <group position={[0,.16,0]}>
-  <mesh position={[-.14,0,0]} scale={[1.35,.82,1]}><torusGeometry args={[.105,.018,10,24]}/><meshStandardMaterial color="#293a3a"/></mesh>
-  <mesh position={[.14,0,0]} scale={[1.35,.82,1]}><torusGeometry args={[.105,.018,10,24]}/><meshStandardMaterial color="#293a3a"/></mesh>
-  <mesh position={[-.14,0,-.006]} scale={[1.2,.72,1]}><circleGeometry args={[.095,24]}/><meshStandardMaterial color="#b9d5d2" transparent opacity={.45}/></mesh>
-  <mesh position={[.14,0,-.006]} scale={[1.2,.72,1]}><circleGeometry args={[.095,24]}/><meshStandardMaterial color="#b9d5d2" transparent opacity={.45}/></mesh>
-  <mesh position={[0,0,0]}><boxGeometry args={[.075,.025,.025]}/><meshStandardMaterial color="#293a3a"/></mesh>
-  <mesh position={[0,0,-.04]} scale={[1.1,.65,1]}><torusGeometry args={[.29,.012,8,24,Math.PI]}/><meshStandardMaterial color="#536664"/></mesh>
+ if(id==='goggles')return <group position={[0,.19,0]} rotation={[-.12,0,0]}>
+  {/* One-piece chemical splash goggles, not ordinary spectacles. */}
+  <mesh position={[0,0,0]}><boxGeometry args={[.58,.23,.07]}/><meshStandardMaterial color="#d8eeef" transparent opacity={.42} roughness={.12}/></mesh>
+  <mesh position={[0,.115,.005]}><boxGeometry args={[.58,.025,.09]}/><meshStandardMaterial color="#405554" roughness={.45}/></mesh>
+  <mesh position={[0,-.115,.005]}><boxGeometry args={[.58,.025,.09]}/><meshStandardMaterial color="#405554" roughness={.45}/></mesh>
+  <mesh position={[-.29,0,.005]}><boxGeometry args={[.025,.22,.09]}/><meshStandardMaterial color="#405554" roughness={.45}/></mesh>
+  <mesh position={[.29,0,.005]}><boxGeometry args={[.025,.22,.09]}/><meshStandardMaterial color="#405554" roughness={.45}/></mesh>
+  <mesh position={[0,-.10,.05]} scale={[1.1,.65,1]}><torusGeometry args={[.075,.018,8,20,Math.PI]}/><meshStandardMaterial color="#405554"/></mesh>
+  <mesh position={[-.35,0,-.02]}><boxGeometry args={[.12,.11,.12]}/><meshStandardMaterial color="#8fb0ae" transparent opacity={.55}/></mesh>
+  <mesh position={[.35,0,-.02]}><boxGeometry args={[.12,.11,.12]}/><meshStandardMaterial color="#8fb0ae" transparent opacity={.55}/></mesh>
+  <mesh position={[0,0,-.25]} scale={[1.15,.65,1]}><torusGeometry args={[.36,.014,8,30,Math.PI]}/><meshStandardMaterial color="#667b76" roughness={.7}/></mesh>
  </group>;
 
- if(id==='coat')return <group position={[0,.35,0]}>
-  <mesh position={[0,0,0]}><boxGeometry args={[.38,.62,.1]}/><meshStandardMaterial color="#f4f3ef"/></mesh>
-  <mesh position={[-.28,.02,0]} rotation={[0,0,-.18]}><capsuleGeometry args={[.065,.45,6,12]}/><meshStandardMaterial color="#efeee9"/></mesh>
-  <mesh position={[.28,.02,0]} rotation={[0,0,.18]}><capsuleGeometry args={[.065,.45,6,12]}/><meshStandardMaterial color="#efeee9"/></mesh>
+ if(id==='coat')return <group position={[0,.36,0]}>
+  <mesh position={[0,0,0]} rotation={[0,Math.PI/4,0]}><cylinderGeometry args={[.20,.30,.70,4]}/><meshStandardMaterial color="#f6f5f0" roughness={.78}/></mesh>
+  <mesh position={[-.29,.02,0]} rotation={[0,0,-.16]}><capsuleGeometry args={[.07,.48,7,14]}/><meshStandardMaterial color="#efeee9" roughness={.8}/></mesh>
+  <mesh position={[.29,.02,0]} rotation={[0,0,.16]}><capsuleGeometry args={[.07,.48,7,14]}/><meshStandardMaterial color="#efeee9" roughness={.8}/></mesh>
   <mesh position={[-.09,.18,.06]} rotation={[0,0,-.35]}><boxGeometry args={[.16,.28,.018]}/><meshStandardMaterial color="#deddd8"/></mesh>
   <mesh position={[.09,.18,.06]} rotation={[0,0,.35]}><boxGeometry args={[.16,.28,.018]}/><meshStandardMaterial color="#e8e7e2"/></mesh>
   <mesh position={[0,-.05,.06]}><boxGeometry args={[.015,.46,.018]}/><meshStandardMaterial color="#aeb2ad"/></mesh>
   {[-.12,.12].map(x=><mesh key={x} position={[x,-.15,.065]}><boxGeometry args={[.12,.1,.02]}/><meshStandardMaterial color="#d8d8d3"/></mesh>)}
+  {[-.12,0,.12].map(y=><mesh key={y} position={[0,y-.02,.078]}><sphereGeometry args={[.012,10,8]}/><meshStandardMaterial color="#5e6661"/></mesh>)}
  </group>;
 
  if(id==='gloves')return <group position={[0,.12,0]} rotation={[-.18,0,-.25]}>
@@ -163,26 +173,27 @@ export function Model({id,pink=false,filled=false,over=false,loaded=false}:{id:s
  </group>;
 }
 
-function Item({obj,state,dispatch,select,selected,cameraMode,onInteract,modalOpen}:{obj:State['objects'][number];state:State;dispatch:React.Dispatch<Action>;select:(id:string)=>void;selected:boolean;cameraMode:boolean;onInteract:()=>void;modalOpen?:boolean}){
+type WorldSound='clink'|'pour'|'drop';
+function Item({obj,state,dispatch,select,selected,cameraMode,onInteract,onAction,modalOpen}:{obj:State['objects'][number];state:State;dispatch:React.Dispatch<Action>;select:(id:string)=>void;selected:boolean;cameraMode:boolean;onInteract:()=>void;onAction:(kind:WorldSound)=>void;modalOpen?:boolean}){
  const [hover,setHover]=useState(false);const dragging=useRef(false);const lastPos=useRef<[number,number,number]|null>(null);const {raycaster,invalidate}=useThree();const plane=useMemo(()=>new THREE.Plane(new THREE.Vector3(0,1,0),-.87),[]);
  const kind=tools.find(tool=>tool.id===obj.id)?.kind;
  const modelScale=kind==='stand'?1:kind==='burette'?1:kind==='pipette'?1:kind==='flask'?1:kind==='funnel'?1:kind==='beaker'?1:1;
  const near=(id:string,p:[number,number,number],distance=.65)=>{const other=state.objects.find(item=>item.id===id);return !!other&&Math.hypot(p[0]-other.pos[0],p[2]-other.pos[2])<distance};
  function move(e:ThreeEvent<PointerEvent>){if(cameraMode||!dragging.current||obj.locked)return;e.stopPropagation();const point=new THREE.Vector3();if(raycaster.ray.intersectPlane(plane,point)){let x=Math.max(-2.5,Math.min(2.5,point.x)),z=Math.max(-1,Math.min(1,point.z));if(state.step===8&&obj.id==='flask'){x=Math.max(-.68,Math.min(.08,x));z=Math.max(-.18,Math.min(.52,z));dispatch({type:'mix'})}const pos:[number,number,number]=[x,.87,z];lastPos.current=pos;dispatch({type:'move',id:obj.id,pos});invalidate()}}
  function up(e:ThreeEvent<PointerEvent>){e.stopPropagation();dragging.current=false;(e.target as Element).releasePointerCapture?.(e.pointerId);const p=lastPos.current||obj.pos;lastPos.current=null;
-  if(state.step===1&&['stand','burette'].includes(obj.id)){const t=targets[obj.id];if(Math.hypot(p[0]-t[0],p[2]-t[2])<.68){dispatch({type:'move',id:obj.id,pos:t});dispatch({type:'lock',id:obj.id});return}}
-  if(state.step===2&&obj.id==='naoh'&&near('burette',p)){dispatch({type:'rinse'});return}
-  if(state.step===3&&obj.id==='funnel'&&near('burette',p)){dispatch({type:'placeFunnel'});return}
-  if(state.step===3&&obj.id==='naoh'&&state.funnelPlaced&&near('burette',p)){dispatch({type:'fill'});return}
-  if(state.step===4&&obj.id==='funnel'&&!near('burette',p,.85)){dispatch({type:'record'});return}
-  if(state.step===5&&obj.id==='pipette'&&near('hcl',p)){dispatch({type:'loadPipette'});return}
-  if(state.step===5&&obj.id==='pipette'&&state.pipetteLoaded&&near('flask',p)){dispatch({type:'pipette'});return}
-  if(state.step===6&&obj.id==='indicator'&&near('flask',p)){dispatch({type:'indicator'});return}
-  if(state.step===7&&obj.id==='flask'){const t=targets.flask;if(Math.hypot(p[0]-t[0],p[2]-t[2])<.68){dispatch({type:'move',id:'flask',pos:t});dispatch({type:'ready'});return}}
+  if(state.step===1&&['stand','burette'].includes(obj.id)){const t=targets[obj.id];if(Math.hypot(p[0]-t[0],p[2]-t[2])<.68){onAction('clink');dispatch({type:'move',id:obj.id,pos:t});dispatch({type:'lock',id:obj.id});return}}
+  if(state.step===2&&obj.id==='naoh'&&near('burette',p)){onAction('pour');dispatch({type:'rinse'});return}
+  if(state.step===3&&obj.id==='funnel'&&near('burette',p)){onAction('clink');dispatch({type:'placeFunnel'});return}
+  if(state.step===3&&obj.id==='naoh'&&state.funnelPlaced&&near('burette',p)){onAction('pour');dispatch({type:'fill'});return}
+  if(state.step===4&&obj.id==='funnel'&&!near('burette',p,.85)){onAction('clink');dispatch({type:'record'});return}
+  if(state.step===5&&obj.id==='pipette'&&near('hcl',p)){onAction('pour');dispatch({type:'loadPipette'});return}
+  if(state.step===5&&obj.id==='pipette'&&state.pipetteLoaded&&near('flask',p)){onAction('pour');dispatch({type:'pipette'});return}
+  if(state.step===6&&obj.id==='indicator'&&near('flask',p)){onAction('drop');dispatch({type:'indicator'});return}
+  if(state.step===7&&obj.id==='flask'){const t=targets.flask;if(Math.hypot(p[0]-t[0],p[2]-t[2])<.68){onAction('clink');dispatch({type:'move',id:'flask',pos:t});dispatch({type:'ready'});return}}
   if(state.step===8&&obj.id==='flask'){dispatch({type:'move',id:'flask',pos:targets.flask});dispatch({type:'mix'})}
  }
  return <group position={obj.pos} onPointerOver={e=>{e.stopPropagation();setHover(true)}} onPointerOut={()=>setHover(false)} onPointerDown={e=>{if(cameraMode)return;e.stopPropagation();onInteract();select(obj.id);dragging.current=!obj.locked;(e.target as Element).setPointerCapture?.(e.pointerId)}} onPointerMove={move} onPointerUp={up}>
- <group scale={modelScale}><Model id={obj.id} filled={state.step>=6} pink={state.indicator&&state.volume>=24.8} loaded={obj.id==='pipette'&&state.pipetteLoaded}/></group>{!modalOpen&&(hover||selected)&&<Html position={[0,kind==='burette'?1.75:kind==='stand'?2.35:kind==='flask'?.58:.75,0]} center style={{pointerEvents:'none',whiteSpace:'nowrap'}}><span className="object-label">{tools.find(t=>t.id===obj.id)?.name}{obj.locked?' · terpasang':''}</span></Html>}
+ <group scale={modelScale}><Model id={obj.id} filled={state.step>=6} pink={state.indicator&&state.volume>=24.8} loaded={obj.id==='pipette'&&state.pipetteLoaded}/></group>{!modalOpen&&(hover||selected)&&<Html position={[0,kind==='burette'?1.46:kind==='stand'?2.15:kind==='flask'?.58:.75,0]} center style={{pointerEvents:'none',whiteSpace:'nowrap'}}><span className="object-label">{tools.find(t=>t.id===obj.id)?.name}{obj.locked?' · terpasang':''}</span></Html>}
  {selected&&<mesh rotation={[-Math.PI/2,0,0]} position={[0,.006,0]}><ringGeometry args={[.3,.32,24]}/><meshBasicMaterial color="#c62828" side={THREE.DoubleSide}/></mesh>}</group>
 }
 
@@ -204,7 +215,7 @@ function CameraReset({resetKey}:{resetKey:number}){
  return null;
 }
 
-export default function Scene({state,dispatch,selected,select,cameraMode,resetKey,onInteract,modalOpen}:{state:State;dispatch:React.Dispatch<Action>;selected:string|null;select:(id:string)=>void;cameraMode:boolean;resetKey:number;onInteract:()=>void;modalOpen?:boolean}){
+export default function Scene({state,dispatch,selected,select,cameraMode,resetKey,onInteract,onAction,modalOpen}:{state:State;dispatch:React.Dispatch<Action>;selected:string|null;select:(id:string)=>void;cameraMode:boolean;resetKey:number;onInteract:()=>void;onAction:(kind:WorldSound)=>void;modalOpen?:boolean}){
  const snapIds=state.step===1?['stand','burette']:state.step===7?['flask']:[];
  return <Canvas orthographic camera={{position:[6.8,6.2,7.8],zoom:66}} dpr={[1,1.5]} frameloop="always" fallback={<p>WebGL2 tidak tersedia. Gunakan browser terbaru untuk membuka lab.</p>}>
   <CameraReset resetKey={resetKey}/>
@@ -215,15 +226,15 @@ export default function Scene({state,dispatch,selected,select,cameraMode,resetKe
   <Particles/>
   <Room/>
   {state.mode==='latihan'&&snapIds.map(id=>{const p=targets[id];return <mesh key={id} position={[p[0],.868,p[2]]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.28,.3,32]}/><meshBasicMaterial color="#bc5757" transparent opacity={.6}/></mesh>})}
-  {state.objects.map(obj=><Item key={obj.id} obj={obj} state={state} dispatch={dispatch} selected={selected===obj.id} select={select} cameraMode={cameraMode} onInteract={onInteract} modalOpen={modalOpen}/>)}
+  {state.objects.map(obj=><Item key={obj.id} obj={obj} state={state} dispatch={dispatch} selected={selected===obj.id} select={select} cameraMode={cameraMode} onInteract={onInteract} onAction={onAction} modalOpen={modalOpen}/>)}
   <OrbitControls makeDefault enableRotate={false} enablePan={cameraMode} enableZoom minZoom={35} maxZoom={120} target={[0,1.35,0]} mouseButtons={{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_PAN}}/>
  </Canvas>
 }
 
 export function Preview({id}:{id:string}){
  const kind=tools.find(t=>t.id===id)?.kind;
- const scale=kind==='burette'?.50:kind==='stand'?.44:kind==='pipette'?.62:1.15;
- const posY=kind==='burette'?-1.0:kind==='stand'?-1.05:kind==='pipette'?-.45:-.28;
+ const scale=kind==='burette'?.62:kind==='stand'?.50:kind==='pipette'?.62:1.15;
+ const posY=kind==='burette'?-0.72:kind==='stand'?-1.0:kind==='pipette'?-.45:-.28;
  return <Canvas camera={{position:[2.2,1.6,3.2],fov:38}} dpr={1}>
   <ambientLight intensity={2.2}/>
   <directionalLight position={[4,5,4]} intensity={2.4}/>
