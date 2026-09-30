@@ -21,6 +21,15 @@ export function ToolIcon({id,className}:{id:string;className?:string}){
  if(id==='indicator')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 6h4v2h-4zM12 2a2 2 0 0 1 2 2v2h-4V4a2 2 0 0 1 2-2zM8 8h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><path d="M12 12v5m-1 0h2"/></svg>;
  if(id==='water')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 8h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><path d="M10 8V5h4v3M12 5V2l5 2"/></svg>;
  if(id==='tube')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 3h8M9 3v13a3 3 0 0 0 6 0V3"/><path d="M9 11c1 .5 3 .5 4 0"/></svg>;
- if(id==='cylinder')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 3h6v16H9zM7 21h10M9 7h3M9 11h4M9 15h3"/></svg>;
  return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>;
 }
+
+export function FlaskCatalogIcon({className}:{className?:string}){
+ return <svg className={className} viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <path d="M12 4h8M14 4v7L7 23a3 3 0 0 0 2.6 4.5h12.8A3 3 0 0 0 25 23l-7-12V4" />
+  <path d="M10 20.5c3 1.2 9-1.2 12 0" strokeDasharray="1.5 1.5" />
+  <circle cx="14" cy="23" r="1" fill="currentColor" />
+  <circle cx="18" cy="24" r="0.8" fill="currentColor" />
+ </svg>;
+}
+
