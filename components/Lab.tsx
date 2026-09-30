@@ -32,7 +32,8 @@ export default function Lab(){
  const [selected,select]=useState<string|null>(null);
  const [preview,setPreview]=useState('flask');
  const [muted,setMuted]=useState(false);
- const [drawer,setDrawer]=useState('');
+ const [drawer,setDrawer]=useState<'tools'|'notes'|''>('tools');
+ const [showTip,setShowTip]=useState(true);
  const [cameraMode,setCameraMode]=useState(false);
  const [cameraReset,setCameraReset]=useState(0);
  const [titrationOpen,setTitrationOpen]=useState(false);
@@ -100,11 +101,18 @@ export default function Lab(){
    <button aria-label={muted?'Aktifkan suara':'Matikan suara'} onClick={()=>setMuted(!muted)}>{muted?'Suara mati':'Suara aktif'}</button>
    <Link href="/kimia/titrasi">Keluar</Link>
   </header>
-  <div className="mobile-tabs"><button onClick={()=>setDrawer(drawer==='tools'?'':'tools')}>Alat & bahan</button><span>{mode==='latihan'?'Latihan':'Ujian'}</span><button onClick={()=>setDrawer(drawer==='notes'?'':'notes')}>Catatan</button></div>
-  <div className="lab-body">
+  <div className="mobile-tabs">
+   <button className={`tab-btn${drawer==='tools'?' active':''}`} onClick={()=>setDrawer(drawer==='tools'?'':'tools')}>Alat & Bahan <span className="tab-badge">{state.objects.length}</span></button>
+   <button className={`tab-btn${drawer==='notes'?' active':''}`} onClick={()=>setDrawer(drawer==='notes'?'':'notes')}>Panduan <span className="tab-badge">{state.step+1}/10</span></button>
+   <button className="tab-collapse-btn" onClick={()=>setDrawer(drawer?'':'tools')} title={drawer?'Sembunyikan panel':'Tampilkan panel'}>{drawer?'Tutup ▼':'Panel ▲'}</button>
+  </div>
+  <div className={`lab-body${drawer?` drawer-${drawer}`:''}`}>
    <aside className={`inventory ${drawer==='tools'?'opened':''}`}>
-    <div className="panel-heading"><h2>Alat & bahan</h2><small>Seret ke meja</small></div>
-    <div className="inventory-list">{tools.filter(tool=>mode==='ujian'||!['tube','cylinder'].includes(tool.id)).map(tool=>{const isPpe=tool.kind==='ppe';const equipped=state.ppe.includes(tool.id);const onTable=state.objects.some(object=>object.id===tool.id);return <button key={tool.id} draggable={!isPpe} className={`${preview===tool.id?'inventory-item active':'inventory-item'}${isPpe?' ppe-item':''}${equipped||onTable?' item-deployed':''}`} onDragStart={event=>{if(isPpe)return;playSound('touch');event.dataTransfer.setData('text/lab-tool',tool.id);event.dataTransfer.effectAllowed='copy';setPreview(tool.id)}} onMouseEnter={event=>showToolTip(event,tool.id)} onMouseLeave={hideToolTip} onFocus={()=>{keepToolTip();setPreview(tool.id);setToolTip({visible:true,x:270,y:110})}} onBlur={hideToolTip} onClick={()=>{setPreview(tool.id);if(isPpe&&!equipped)dispatch({type:'add',id:tool.id})}} onKeyDown={event=>{if(!isPpe&&(event.key==='Enter'||event.key===' ')){event.preventDefault();dispatch({type:'add',id:tool.id})}}}><div className="item-icon-box"><ToolIcon id={tool.id} className="item-icon"/></div><div className="item-meta"><span className="item-name">{tool.name}</span><span className="item-category">{tool.category}</span></div><span className={`item-badge${equipped||onTable?' active-badge':''}`}>{isPpe?(equipped?'Dipakai':'Kenakan'):(onTable?'✓ Meja':'⋮⋮ Seret')}</span></button>})}</div>
+    <div className="panel-heading">
+     <div><h2>Alat & bahan</h2><small>Ketuk untuk menambah · Seret di meja</small></div>
+     <button type="button" className="panel-close-btn" onClick={()=>setDrawer('')} aria-label="Tutup panel">✕</button>
+    </div>
+    <div className="inventory-list">{tools.filter(tool=>mode==='ujian'||!['tube','cylinder'].includes(tool.id)).map(tool=>{const isPpe=tool.kind==='ppe';const equipped=state.ppe.includes(tool.id);const onTable=state.objects.some(object=>object.id===tool.id);return <button key={tool.id} draggable={!isPpe} className={`${preview===tool.id?'inventory-item active':'inventory-item'}${isPpe?' ppe-item':''}${equipped||onTable?' item-deployed':''}`} onDragStart={event=>{if(isPpe)return;playSound('touch');event.dataTransfer.setData('text/lab-tool',tool.id);event.dataTransfer.effectAllowed='copy';setPreview(tool.id)}} onMouseEnter={event=>showToolTip(event,tool.id)} onMouseLeave={hideToolTip} onFocus={()=>{keepToolTip();setPreview(tool.id);setToolTip({visible:true,x:270,y:110})}} onBlur={hideToolTip} onClick={()=>{setPreview(tool.id);if(isPpe){if(!equipped)dispatch({type:'add',id:tool.id})}else{if(!onTable){playSound('confirm');dispatch({type:'add',id:tool.id});select(tool.id)}else{playSound('touch');select(tool.id)}}}} onKeyDown={event=>{if(!isPpe&&(event.key==='Enter'||event.key===' ')){event.preventDefault();dispatch({type:'add',id:tool.id})}}}><div className="item-icon-box"><ToolIcon id={tool.id} className="item-icon"/></div><div className="item-meta"><span className="item-name">{tool.name}</span><span className="item-category">{tool.category}</span></div><span className={`item-badge${equipped||onTable?' active-badge':''}`}>{isPpe?(equipped?'Dipakai':'Kenakan'):(onTable?'✓ Meja':'⋮⋮ Pasang')}</span></button>})}</div>
     <div className={`tool-info${toolTip.visible?' visible':''}`} style={{left:toolTip.x,top:toolTip.y}} role="status" onMouseEnter={keepToolTip} onMouseLeave={hideToolTip}><div className="tool-info-copy"><div className="tool-tags"><span>Kenali alat</span><span className="tool-category-badge">{item.category}</span></div><h3>{item.name}</h3><div className="tool-spec-box"><strong>Spesifikasi:</strong> {item.spec}</div><p>{item.info}</p><p className="safety-copy"><strong>Keselamatan</strong>{item.safety}</p>{item.kind==='bottle'&&item.id!=='water'&&<details><summary>Kenali simbol bahaya</summary><HazardLegend/><p>Korosi: cairan mengenai tangan/logam. Tengkorak: toksisitas akut. Ikan/pohon: bahaya lingkungan.</p><p>Label aktual mengikuti SDS produk dan konsentrasinya; simbol tidak otomatis berlaku untuk semua larutan.</p></details>}</div><div className="popover-preview"><Preview id={preview}/><small>Model 3D interaktif · Putar preview</small></div></div>
    </aside>
    <main className="lab-center">
@@ -116,13 +124,23 @@ export default function Lab(){
     {state.step===8&&!titrationOpen&&<button className="open-titration" onClick={()=>{playSound('touch');select(null);setTitrationOpen(true)}}>Buka kontrol titrasi</button>}
    </main>
    <aside className={`notes ${drawer==='notes'?'opened':''}`}>
+    <div className="panel-heading mobile-notes-heading">
+     <div><h2>Panduan & Catatan</h2><small>Langkah {state.step+1} dari 10</small></div>
+     <button type="button" className="panel-close-btn" onClick={()=>setDrawer('')} aria-label="Tutup panel">✕</button>
+    </div>
     {mode==='latihan'&&<section><h2>Panduan praktikum</h2><div className="step-accordions">{steps.map((step,index)=><details key={step} open={index===state.step} className={index===state.step?'current':index<state.step?'done':''}><summary><span>{index<state.step?'✓':index+1}</span>{step}</summary><p>{stepDetails[index]}</p></details>)}</div><div className="step-actions"><button type="button" className="step-btn prev-btn" disabled={state.step===0} onClick={()=>{playSound('touch');select(null);if(state.step===8)setTitrationOpen(false);dispatch({type:'prevStep'})}} title="Kembali ke langkah sebelumnya">← Langkah {Math.max(1,state.step)}</button><button type="button" className="step-btn reset-btn" onClick={()=>{playSound('touch');select(null);soundPlayed.current=false;dispatch({type:'resetStep'})}} title={`Ulangi langkah ${state.step+1}`}>↺ Ulangi langkah {state.step+1}</button></div></section>}
     <section><h2>Catatan reaksi</h2><p>HCl + NaOH → NaCl + H₂O</p><p className="formula">MₐVₐ = MᵦVᵦ</p><p>Gunakan selisih pembacaan buret untuk memperoleh volume titran.</p><p className="muted">APD: {state.ppe.length}/3 terpasang</p></section>
     <section><h2>Log aktivitas</h2><ol className="event-log">{state.log.slice(-8).map((entry,index)=><li key={index}>{mode==='ujian'?`Tindakan ${state.log.length-Math.min(8,state.log.length)+index+1} dicatat.`:entry.text}</li>)}</ol></section>
     {mode==='latihan'&&<button className="reset-lab-btn" onClick={reset}>Ulangi seluruh praktikum dari awal</button>}
    </aside>
   </div>
-  <div className="rotate-notice"><h2>Putar perangkatmu.</h2><p>Gunakan posisi landscape agar meja dan alat praktikum terlihat jelas.</p><Link href="/kimia/titrasi">Kembali ke pengantar</Link></div>
+  {drawer!==''&&<div className="drawer-backdrop" onClick={()=>setDrawer('')}/>}
+  {showTip&&(
+   <div className="mobile-rotate-tip" role="status">
+    <span>💡 <strong>Tip:</strong> Putar HP ke posisi mendatar (landscape) jika ingin meja lab lebih luas.</span>
+    <button type="button" className="tip-close-btn" onClick={()=>setShowTip(false)} aria-label="Tutup saran">✕</button>
+   </div>
+  )}
   {state.step===8&&titrationOpen&&<TitrationDialog state={state} close={()=>setTitrationOpen(false)} dose={value=>{playSound('dose');dispatch({type:'dose',value})}} swirl={()=>{playSound('swirl');dispatch({type:'mix'})}} finish={()=>{playSound(endpoint(state)?'stage':'error');dispatch({type:'finish'})}} resetTitration={()=>{playSound('touch');soundPlayed.current=false;dispatch({type:'resetTitration'})}}/>}
   {state.step===9&&<div className="assessment-overlay"><section className="assessment assessment-split"><div className="meniscus-side"><span className="modal-kicker">Hasil pengukuran</span><h2>Baca meniskus.</h2><p>Gunakan bagian bawah lengkungan cairan dan baca sejajar dengan mata.</p><div className="meniscus-pair"><Meniscus value={.15} label="Pembacaan awal"/><Meniscus value={.15+state.volume} label="Pembacaan akhir"/></div></div><div className="answer-side"><span className="modal-kicker">Uji pemahaman</span><h2>Catat hasilmu.</h2><p>Masukkan pembacaan buret dan hitung konsentrasi sampel.</p><form onSubmit={event=>{event.preventDefault();playSound('stage');dispatch({type:'submit',answers})}}>{[['initial','Volume awal (mL)'],['final','Volume akhir (mL)'],['molarity','Molaritas HCl (M)']].map(([key,label])=><label key={key}>{label}<input required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" value={answers[key as keyof typeof answers]} onChange={event=>setAnswers({...answers,[key]:event.target.value})}/></label>)}<button className="primary" type="submit">Kumpulkan hasil ↗</button></form></div></section></div>}
  </div>;
