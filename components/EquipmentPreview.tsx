@@ -1,8 +1,6 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Bounds, Center, OrbitControls } from "@react-three/drei";
-import { Component, ReactNode, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DoubleSide, Vector2 } from "three";
 import type { EquipmentId } from "@/lib/introduction";
 
@@ -190,44 +188,59 @@ export function EquipmentModel({ id }: { id: EquipmentId }) {
       );
     case "coat":
       return (
-        <group>
-          <mesh>
-            <cylinderGeometry args={[0.32, 0.4, 1.12, 8]} />
-            <meshStandardMaterial color="#f0f1f4" />
-          </mesh>
+        <group position={[0, 0.02, 0]}>
+          <Part
+            at={[0, -0.08, 0]}
+            size={[0.72, 1.08, 0.24]}
+            color="#f1f3f2"
+          />
+          <Part
+            at={[0, -0.53, 0]}
+            size={[0.84, 0.32, 0.27]}
+            color="#f1f3f2"
+          />
           {[-1, 1].map((side) => (
             <group key={side}>
               <Rod
-                at={[side * 0.45, 0.19, 0]}
-                height={0.78}
-                radius={0.12}
-                color="#e6eaee"
-                rotate={[0, 0, side * 0.3]}
+                at={[side * 0.52, 0.02, 0]}
+                height={0.92}
+                radius={0.13}
+                color="#e9edeb"
+                rotate={[0, 0, side * 0.18]}
               />
               <Part
-                at={[side * 0.2, -0.22, 0.35]}
-                size={[0.18, 0.2, 0.025]}
-                color="#dde4e9"
+                at={[side * 0.6, -0.42, 0]}
+                size={[0.28, 0.1, 0.28]}
+                color="#d9dfdc"
               />
               <Part
-                at={[side * 0.1, 0.46, 0.27]}
-                size={[0.17, 0.24, 0.025]}
-                color="#d4dde4"
-                rotate={[0, 0, side * 0.45]}
+                at={[side * 0.24, 0.42, 0.145]}
+                size={[0.28, 0.34, 0.035]}
+                color="#e2e7e4"
+                rotate={[0, 0, side * 0.52]}
+              />
+              <Part
+                at={[side * 0.23, -0.29, 0.145]}
+                size={[0.3, 0.23, 0.035]}
+                color="#e3e8e5"
               />
             </group>
           ))}
+          <mesh position={[0, 0.54, 0]}>
+            <cylinderGeometry args={[0.19, 0.22, 0.12, 24]} />
+            <meshStandardMaterial color="#dfe5e2" roughness={0.45} />
+          </mesh>
           <Part
-            at={[0, -0.03, 0.37]}
-            size={[0.012, 0.96, 0.013]}
-            color="#a3b2bf"
+            at={[0, -0.12, 0.145]}
+            size={[0.018, 0.86, 0.025]}
+            color="#b6c1bc"
           />
-          {[0, 0.16, 0.32, -0.16, -0.32].map((y) => (
+          {[0.24, 0.05, -0.14, -0.33].map((y) => (
             <Part
               key={y}
-              at={[0.045, y, 0.38]}
-              size={[0.022, 0.022, 0.018]}
-              color="#7e919e"
+              at={[0.055, y, 0.17]}
+              size={[0.025, 0.025, 0.025]}
+              color="#71817b"
               round
             />
           ))}
@@ -630,78 +643,4 @@ export function EquipmentModel({ id }: { id: EquipmentId }) {
         </group>
       );
   }
-}
-
-class PreviewBoundary extends Component<
-  { children: ReactNode },
-  { failed: boolean }
-> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  render() {
-    return this.state.failed ? (
-      <p className="course-preview-loading">
-        Model 3D tidak tersedia. Ciri pengenal alat tetap dapat dibaca di
-        materi.
-      </p>
-    ) : (
-      this.props.children
-    );
-  }
-}
-
-export default function EquipmentPreview({ id }: { id: EquipmentId }) {
-  const [angle, setAngle] = useState(0);
-  return (
-    <div className="equipment-viewer">
-      <div
-        className="equipment-canvas"
-        role="img"
-        aria-label={"Model 3D " + id}
-      >
-        <PreviewBoundary>
-          <Canvas
-            key={id}
-            dpr={[1, 1.5]}
-            frameloop="demand"
-            camera={{ position: [2, 1.3, 3], fov: 38 }}
-            fallback={
-              <p>WebGL tidak tersedia. Baca ciri pengenal alat di materi.</p>
-            }
-          >
-            <ambientLight intensity={1.8} />
-            <directionalLight position={[3, 5, 4]} intensity={2.5} />
-            <directionalLight position={[-3, 2, -1]} intensity={1} />
-            <Bounds fit clip observe margin={1.35}>
-              <Center>
-                <group rotation={[0, angle, 0]}>
-                  <EquipmentModel id={id} />
-                </group>
-              </Center>
-            </Bounds>
-            <OrbitControls makeDefault enablePan={false} enableZoom={false} />
-          </Canvas>
-        </PreviewBoundary>
-      </div>
-      <div className="model-controls">
-        <button
-          type="button"
-          aria-label="Putar alat ke kiri"
-          onClick={() => setAngle((value) => value - Math.PI / 6)}
-        >
-          Putar kiri
-        </button>
-        <span>Seret untuk memutar</span>
-        <button
-          type="button"
-          aria-label="Putar alat ke kanan"
-          onClick={() => setAngle((value) => value + Math.PI / 6)}
-        >
-          Putar kanan
-        </button>
-      </div>
-    </div>
-  );
 }

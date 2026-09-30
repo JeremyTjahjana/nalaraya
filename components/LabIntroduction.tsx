@@ -6,7 +6,7 @@ import {FormEvent,useEffect,useRef,useState} from 'react';
 import HazardLegend from './HazardLegend';
 import {equipment,EquipmentId,introQuestions,gradeIntroduction,readCompletion,saveCompletion} from '@/lib/introduction';
 
-const Preview=dynamic(()=>import('./EquipmentPreview'),{ssr:false,loading:()=> <p className="course-preview-loading">Menyiapkan model…</p>});
+const Preview=dynamic(()=>import('./ToolPreview'),{ssr:false,loading:()=> <p className="course-preview-loading">Menyiapkan model…</p>});
 
 export default function LabIntroduction(){
  const [selected,setSelected]=useState<EquipmentId>('goggles');
@@ -42,7 +42,7 @@ export default function LabIntroduction(){
    <div className="equipment-explorer">
     <nav className="equipment-picker" aria-label="Pilih peralatan">{equipment.map(tool=><button key={tool.id} aria-pressed={selected===tool.id} onClick={()=>setSelected(tool.id)}>{tool.name}</button>)}</nav>
     <article className="equipment-detail" aria-label={item.name}>
-     <Preview key={selected} id={selected}/>
+     <Preview key={selected} id={selected} controls/>
      <div className="equipment-copy" aria-live="polite"><h3>{item.name}</h3><p>{item.purpose}</p><dl><dt>Ciri pengenal</dt><dd>{item.features}</dd><dt>Cara penggunaan</dt><dd>{item.use}</dd><dt>Perhatikan keselamatan</dt><dd>{item.safety}</dd></dl></div>
     </article>
    </div>
