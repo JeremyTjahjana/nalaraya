@@ -37,57 +37,19 @@ export default function Home() {
         </section>
         <section id="tentang" className="about reveal delay-1">
           <div className="about-heading">
-            <h2>Ruang belajar sains yang lebih merata.</h2>
+            <h2>Lebih banyak kesempatan untuk mencoba.</h2>
             <p className="about-lead">
-              Belajar sains seharusnya berarti mengamati fenomena, menyentuh alat, mencoba reaksi,
-              dan menemukan jawaban—bukan sekadar menghafal langkah kerja dari buku cetak.
+              Alat dan waktu praktikum tidak selalu cukup untuk setiap siswa. Nalaraya memberi ruang
+              untuk mengenali alat, mengulang prosedur, dan membaca hasil sebelum masuk ke laboratorium nyata.
             </p>
-            <p className="about-context">
-              Namun di banyak sekolah, kesempatan praktikum langsung masih sangat terbatas.
-              Keterbatasan jumlah instrumen, mahalnya bahan sekali pakai, serta sempitnya jam
-              pelajaran membuat siswa lebih sering hanya menyaksikan demonstrasi guru dari kejauhan.
-            </p>
-            <div className="barriers-grid">
-              <article>
-                <b>Alat terbatas</b>
-                <span>Satu set aparatus harus bergantian digunakan oleh banyak kelompok siswa.</span>
-              </article>
-              <article>
-                <b>Bahan sekali pakai</b>
-                <span>Siswa ragu mencoba ulang karena khawatir menghabiskan reagen praktikum.</span>
-              </article>
-              <article>
-                <b>Waktu sempit</b>
-                <span>Prosedur analitis yang panjang terpaksa diselesaikan secara tergesa-gesa.</span>
-              </article>
-            </div>
           </div>
           <div className="about-story">
-            <p className="large-copy">
-              Eksplorasi mandiri tanpa rasa takut salah, sebelum melangkah ke laboratorium nyata.
-            </p>
+            <p className="large-copy">Coba sendiri. Ulangi sampai paham.</p>
             <p>
-              Nalaraya hadir sebagai laboratorium virtual yang dapat diakses kapan saja. Siswa
-              bebas mengenali fungsi tiap alat, melatih kepekaan membaca meniskus buret, serta
-              mengamati perubahan warna indikator tetes demi tetes hingga benar-benar memahami
-              prinsip netralisasi.
+              Simulasi ini melengkapi penjelasan guru dan praktikum fisik, bukan menggantikannya.
+              Latih langkahnya di sini, lalu gunakan waktu di laboratorium untuk mengamati dan berdiskusi.
             </p>
-            <p>
-              Simulasi ini tidak dimaksudkan untuk menggantikan peran guru maupun praktikum fisik,
-              melainkan menjembataninya. Ketika siswa sudah memahami alur kerja teknis di Nalaraya,
-              waktu di laboratorium sekolah dapat difokuskan sepenuhnya untuk pengamatan kritis,
-              diskusi ilmiah, dan pemecahan masalah bersama.
-            </p>
-            <div className="fact-row">
-              <span>
-                <b>Interaktif & Bebas Risiko</b>
-                <small>Alat dapat dirangkai dan diuji coba berulang kali tanpa risiko bahaya.</small>
-              </span>
-              <span>
-                <b>Terarah & Terukur</b>
-                <small>Tersedia latihan langkah demi langkah serta mode ujian dengan batas waktu.</small>
-              </span>
-            </div>
+            <a className="text-link" href="#pelajaran">Pilih praktikum <span aria-hidden="true">↗</span></a>
           </div>
         </section>
         <section id="pelajaran" className="subjects reveal delay-2">
