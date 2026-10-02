@@ -183,3 +183,21 @@
   .about{grid-template-columns:1fr;gap:34px}
   .about-story{max-width:620px;border-left:0;border-top:1px solid var(--line);padding:30px 0 0}
 }
+
+.site-footer{display:block}
+.site-footer .footer-main{display:flex;align-items:center;gap:24px;min-height:66px}
+.site-footer .footer-main p{margin:0;color:var(--muted);text-align:right;font-size:14px}
+.site-footer .footer-credits{border-top:1px solid var(--line);margin-top:22px;padding-top:8px}
+.site-footer .footer-credits summary{cursor:pointer;width:max-content;min-height:44px;padding:10px 4px;color:var(--ink);font-size:14px;font-weight:700}
+.site-footer .footer-credits summary:hover{text-decoration:underline;text-underline-offset:4px}
+.site-footer .footer-credits ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 36px;list-style:none;padding:0;margin:16px 0 12px}
+.site-footer .footer-credits li{font-size:14px;color:var(--muted);line-height:1.45}
+.site-footer .footer-credits li a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.site-footer .footer-credits li a:hover{color:var(--red)}
+.site-footer .footer-credits li small{display:block;margin-top:3px;color:var(--muted);font-size:13px}
+@media(max-width:700px){
+  .site-footer .footer-main{display:block}
+  .site-footer .footer-main .brand-logo{margin-bottom:12px}
+  .site-footer .footer-main p{text-align:left}
+  .site-footer .footer-credits ul{grid-template-columns:1fr}
+}

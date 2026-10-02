@@ -1,40 +1,58 @@
+<p align="center">
+  <img src="./public/logo_nalaraya.png" alt="Logo Nalaraya" width="420" />
+</p>
+
 # Nalaraya
 
-Laboratorium virtual titrasi untuk siswa SMA. Next.js + React Three Fiber, geometri low-poly prosedural, bahasa Indonesia.
+Nalaraya adalah laboratorium virtual berbahasa Indonesia untuk belajar sains lewat percobaan. **Seluruh materi dan praktikum gratis, tanpa langganan berbayar.**
 
-## Jalankan
+## Tiga alur pembelajaran
+
+| Alur | Yang tersedia |
+| --- | --- |
+| **Kimia** | Pengenalan laboratorium serta simulasi titrasi asam–basa dengan latihan terpandu dan ujian. |
+| **Biologi** | Pengamatan epidermis bawang merah, dari persiapan preparat hingga pengamatan mikroskopis. |
+| **Fisika** | Segera hadir; belum ada praktikum fisika yang dapat dimainkan. |
+
+Katalog dan materi pengantar dapat dibuka tanpa akun. Untuk masuk ke praktikum virtual dan menyimpan progres di dashboard, pengguna masuk melalui email atau Google, lalu menjawab tiga pertanyaan singkat saat pertama kali bergabung.
+
+## Menjalankan secara lokal
+
+Persyaratan: Node.js dan proyek Supabase yang telah dikonfigurasi.
 
 ```sh
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Buka http://localhost:3000. `npm run build` memeriksa produksi; `npm test` memeriksa logika eksperimen.
+Isi `.env.local` dengan URL proyek dan publishable/anon key Supabase. Terapkan migrasi `supabase/migrations/20261002000000_auth_progress.sql`, lalu ikuti [panduan autentikasi](docs/auth-setup.md) untuk email, Google OAuth, dan redirect URL. Buka `http://localhost:3000`.
 
-## Alur demo
+```sh
+npm test
+npm run build
+```
 
-1. Landing → Kimia → Titrasi → Latihan.
-2. Klik tiga APD. Tambahkan statif dan buret, pilih masing-masing lalu **Pasang pada titik**. Alat juga dapat diseret dan otomatis snap di dekat posisi pemasangan.
-3. Ambil NaOH, gelas limbah, dan corong. Bilas buret, isi, lalu lepas corong dan catat.
-4. Ambil Erlenmeyer, pipet, HCl, dan fenolftalein. Pipet sampel lalu tambahkan indikator.
-5. Pilih Erlenmeyer dan pasang pada titik. Mulai titrasi.
-6. Alirkan 24 × 1 mL dan 16 × 0,05 mL. Aduk labu, tunggu warna stabil 15 detik, lalu selesai.
-7. Isi meniskus 0,15 dan 24,95 mL; molaritas 0,0992 M.
+## Contoh alur praktikum Kimia
 
-Ujian memakai 10 menit, pilihan alat dengan distraktor, tanpa panduan langkah. Timer tetap berjalan saat tab tidak aktif. Data hanya di memori; reload memulai sesi baru. Ini demo asesmen lokal, bukan sistem ujian yang tahan manipulasi.
+Buka **Kimia → Titrasi asam–basa → Latihan**. Kenakan APD, susun statif dan buret, bilas serta isi buret, siapkan sampel HCl dan indikator, lalu lakukan titrasi sampai warna stabil. Catat pembacaan meniskus dan hitung molaritas. Mode ujian memberi batas waktu 10 menit dan tidak menampilkan panduan langkah. Progres latihan dan nilai ujian terbaik disimpan ke akun.
 
-## Batas model
-
-Reaksi ideal HCl–NaOH, endpoint direpresentasikan sebagai rentang 24,80–25,05 mL. Gerak cairan dan preparasi merupakan penyederhanaan pendidikan, bukan simulasi fluida atau pengganti pengawasan guru. Hasil molaritas dihitung dari volume aktual yang dialirkan; hasil overshoot ditandai tidak valid. SDS bahan nyata bergantung formulasi/konsentrasi.
-
-Referensi prosedur: https://www.chem.fsu.edu/chemlab/glassware/glassware.html dan https://www2.chem.wisc.edu/deptfiles/genchem/lab/labdocs/modules/buret/bretread.htm.
+Simulasi memakai reaksi ideal HCl–NaOH. Endpoint direpresentasikan sebagai rentang 24,80–25,05 mL; gerak cairan dan preparasi disederhanakan untuk pembelajaran. Ini bukan pengganti pengawasan guru atau prosedur keselamatan laboratorium nyata. Lihat juga [sumber materi epidermis bawang](docs/epidermis-sources.md).
 
 ## Deployment
 
-Import repository ke Vercel, pilih preset Next.js, build `npm run build`. Tidak membutuhkan environment variable atau backend. Deployment membutuhkan akun Vercel dan repository milik tim.
+Deploy sebagai aplikasi Next.js, misalnya di Vercel, dengan perintah build `npm run build`. Setel `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY` di lingkungan deployment, lalu tambahkan domain deployment ke URL redirect Supabase dan Google sesuai [panduan autentikasi](docs/auth-setup.md). Jangan menaruh service-role key di aplikasi.
 
-## Roadmap dan atribusi
+## Kredit model 3D
 
-Editor guru, eksperimen biologi/fisika, penyimpanan lintas perangkat, serta validasi hasil belajar belum tersedia. Jangan mengklaim kemampuan tersebut pada submission.
+Model berikut digunakan untuk pratinjau peralatan. Masing-masing ditautkan ke karya asli dan berlisensi [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-Next.js/React/Three.js/R3F/Drei menggunakan lisensi open-source masing-masing di node_modules; font Atkinson Hyperlegible memakai SIL OFL. Aset model dan favicon dibuat di kode proyek. AI membantu implementasi serta dokumentasi; tim wajib meninjau dan memahami kode serta menyatakan penggunaan AI secara transparan saat diperlukan.
+| Model | Kreator | Sumber | Penyesuaian di Nalaraya |
+| --- | --- | --- | --- |
+| [CC0 - Funnel 3](https://sketchfab.com/3d-models/cc0-funnel-3-9c71ecea8e0941af9f0e7b59895f7fd4) | plaggy | Sketchfab | Digunakan sebagai pratinjau corong tanpa perubahan bentuk. |
+| [Rubber Med Gloves (free to download)](https://sketchfab.com/3d-models/rubber-med-gloves-free-to-download-ef128b0efbb1461c8c0f37b83b5f17af) | KOMODOZ | Sketchfab | Tekstur pratinjau diperkecil dan data yang tidak terpakai dibersihkan. |
+| [Glasses](https://sketchfab.com/3d-models/glasses-c3d6459e82d647bf990ff05173d9aecb) | vinigor | Sketchfab | Tekstur pratinjau diperkecil dan data yang tidak terpakai dibersihkan. |
+| [Chemistry Glassware](https://sketchfab.com/3d-models/chemistry-glassware-b8594f7dc7e8442dbaaae7a11da4a962) | maxdragonn | Sketchfab | Node beker dan gelas ukur dipilih dari satu berkas GLB. |
+| [Microscope](https://sketchfab.com/3d-models/microscope-2435e338bf7541a4b919e53df50eeeea) | VeeRuby Technologies Pvt Ltd | Sketchfab | Skala dan posisi disesuaikan saat ditampilkan dalam pratinjau. |
+
+Judul **“CC0 - Funnel 3”** adalah judul karya; halaman model mencantumkan lisensi **CC BY 4.0**. Rincian perubahan aset tersedia di [catatan atribusi model](docs/model-attributions.md). Font Atkinson Hyperlegible menggunakan SIL OFL; pustaka Next.js, React, Three.js, React Three Fiber, dan Drei memakai lisensi masing-masing.
