@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {FlaskCatalogIcon} from './ScienceIcons';
 import {readCompletion} from '@/lib/introduction';
+import {createClient} from '@/lib/supabase/client';
 
 const experiments=[
  {title:'Pengenalan peralatan dan bahan kimia',category:'Dasar laboratorium',description:'Pelajari APD, fungsi alat, label bahan, dan simbol bahaya sebelum praktikum.',href:'/kimia/pengenalan-lab',status:'Mulai di sini'},
@@ -21,6 +22,12 @@ export default function ChemistryCatalog(){
 
   useEffect(()=>{
     try{setIntroPassed(readCompletion(window.localStorage))}catch{}
+    const supabase=createClient();if(!supabase)return;
+    void supabase.auth.getUser().then(async ({data})=>{
+      if(!data.user)return;
+      const {data:progress}=await supabase.from('lab_progress').select('practice_completed').eq('user_id',data.user.id).eq('lab_key','chemistry_intro').maybeSingle();
+      if(progress?.practice_completed)setIntroPassed(true);
+    });
   },[]);
 
   const shown=filter==='Semua'?experiments:experiments.filter(item=>item.category===filter);

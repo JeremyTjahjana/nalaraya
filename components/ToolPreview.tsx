@@ -8,11 +8,18 @@ import { equipment, type EquipmentId } from "@/lib/introduction";
 import { getPreviewAsset, type PreviewAsset } from "@/lib/previewModels";
 import { EquipmentModel } from "./EquipmentPreview";
 import { Model } from "./Scene";
+import { BiologyModel, MicroscopeFallback } from "./BiologyModels";
+import { epidermisTools } from "@/lib/epidermis";
 
 const equipmentIds = new Set<string>(equipment.map((item) => item.id));
 
 function GeometryFallback({ id }: { id: string }) {
   if (id === 'pipette') return <Model id="pipette" active/>;
+  if (id === 'microscope') return <MicroscopeFallback/>;
+  const biologyTool = epidermisTools.find((item) => item.id === id);
+  if (biologyTool && !['goggles', 'coat', 'gloves', 'waste'].includes(id)) {
+    return <BiologyModel id={id} />;
+  }
   return equipmentIds.has(id) ? (
     <EquipmentModel id={id as EquipmentId} />
   ) : (

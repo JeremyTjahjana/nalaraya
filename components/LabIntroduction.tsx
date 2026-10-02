@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {FormEvent,useEffect,useRef,useState} from 'react';
 import HazardLegend from './HazardLegend';
 import {equipment,EquipmentId,introQuestions,gradeIntroduction,readCompletion,saveCompletion} from '@/lib/introduction';
+import {createClient} from '@/lib/supabase/client';
 
 const Preview=dynamic(()=>import('./ToolPreview'),{ssr:false,loading:()=> <p className="course-preview-loading">Menyiapkan model…</p>});
 
@@ -46,7 +47,8 @@ export default function LabIntroduction(){
  const continueButton=useRef<HTMLButtonElement>(null);
  const resultHeading=useRef<HTMLHeadingElement>(null);
 
- useEffect(()=>{try{setCompleted(readCompletion(window.localStorage))}catch{/* Storage can be disabled by browser privacy settings. */}},[]);
+ useEffect(()=>{try{setCompleted(readCompletion(window.localStorage))}catch{/* Storage can be disabled by browser privacy settings. */}
+  const supabase=createClient();if(!supabase)return;void supabase.auth.getUser().then(async ({data})=>{if(!data.user)return;const {data:progress}=await supabase.from('lab_progress').select('practice_completed').eq('lab_key','chemistry_intro').eq('user_id',data.user.id).maybeSingle();if(progress?.practice_completed){setCompleted(true);return;}try{if(readCompletion(window.localStorage))void supabase.rpc('record_lab_progress',{p_lab_key:'chemistry_intro',p_mode:'latihan',p_score:null});}catch{}});},[]);
  useEffect(()=>{if(result)resultHeading.current?.focus()},[result]);
 
  const item=equipment.find(tool=>tool.id===selected)!;
@@ -60,6 +62,7 @@ export default function LabIntroduction(){
   if(grade.passed){
    setCompleted(true);
    try{if(!saveCompletion(window.localStorage))setStorageNotice('Hasilmu tetap lulus, tetapi browser tidak dapat menyimpannya.')}catch{setStorageNotice('Hasilmu tetap lulus, tetapi browser tidak dapat menyimpannya.')}
+   const supabase=createClient();if(supabase)void supabase.auth.getUser().then(({data})=>{if(data.user)void supabase.rpc('record_lab_progress',{p_lab_key:'chemistry_intro',p_mode:'latihan',p_score:null}).then(({error})=>{if(error)setStorageNotice('Hasilmu lulus, tetapi akun belum dapat menyimpannya. Coba lagi nanti.');});});
   }
   dialog.current?.scrollTo({top:0});
  }

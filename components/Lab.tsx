@@ -7,6 +7,8 @@ import {useEffect,useReducer,useRef,useState} from 'react';
 import {endpoint,initial,reducer,score,steps,tools} from '@/lib/lab';
 import Logo from './Logo';
 import {ToolIcon} from './ScienceIcons';
+import {playLabSound,type SoundKind} from '@/lib/labSound';
+import ProgressRecorder from './ProgressRecorder';
 
 const Scene=dynamic(()=>import('./Scene'),{ssr:false,loading:()=> <p className="loading">Menyiapkan meja praktikum…</p>});
 const Preview=dynamic(()=>import('./ToolPreview'),{ssr:false});
@@ -90,13 +92,11 @@ export default function Lab(){
  function keepToolTip(){if(tipHideTimer.current)clearTimeout(tipHideTimer.current)}
  function hideToolTip(){keepToolTip();tipHideTimer.current=setTimeout(()=>setToolTip(value=>({...value,visible:false})),220)}
  function showToolTip(event:React.MouseEvent<HTMLButtonElement>,id:string){keepToolTip();const rect=event.currentTarget.getBoundingClientRect();setPreview(id);setToolTip({visible:true,x:rect.right,y:Math.max(92,Math.min(rect.top-26,window.innerHeight-455))})}
- type SoundKind='touch'|'confirm'|'stage'|'endpoint'|'dose'|'swirl'|'error'|'clink'|'pour'|'drop';
  function playSound(kind:SoundKind,force=false){
   if(muted&&!force)return;
   unlockAudio();
   const ctx=audio.current;if(!ctx)return;
-  const notes={touch:[360],confirm:[520],stage:[659,880],endpoint:[880,1174],dose:[920],swirl:[230,300,380],error:[170],clink:[1280,1760],pour:[310,270,230],drop:[940]}[kind];
-  notes.forEach((frequency,index)=>{const oscillator=ctx.createOscillator();const gain=ctx.createGain();oscillator.type=kind==='error'?'sawtooth':kind==='swirl'||kind==='pour'?'sine':kind==='clink'?'square':'triangle';oscillator.frequency.value=frequency;oscillator.connect(gain);gain.connect(ctx.destination);const time=ctx.currentTime+index*(kind==='pour'?.055:.08);gain.gain.setValueAtTime(kind==='touch' ? .035 : kind==='clink'?.035:.075,time);gain.gain.exponentialRampToValueAtTime(.001,time+((kind==='stage'||kind==='endpoint') ? .55 : kind==='pour'?.32:.2));oscillator.start(time);oscillator.stop(time+.6)});
+  playLabSound(ctx,kind);
  }
  function toggleSound(){if(muted){setMuted(false);playSound('confirm',true)}else{playSound('touch',true);setMuted(true)}}
  function reset(){dispatch({type:'reset'});select(null);start.current=Date.now();soundPlayed.current=false;lastLogAt.current=0;lastStep.current=0;setTitrationOpen(false);setAnswers({initial:'',final:'',molarity:''});playSound('touch')}
@@ -124,7 +124,7 @@ export default function Lab(){
    <Link className="lab-exit" href="/kimia/titrasi">Keluar</Link>
   </header>
   <div className={`lab-body${drawer?` drawer-${drawer}`:''}`}>
-   <aside className={`inventory ${drawer==='tools'?'opened':''}`}>
+   <aside className={`inventory ${drawer==='tools'?'opened':''}`} onMouseLeave={hideToolTip}>
     <div className="panel-heading">
      <div><h2>Alat & bahan</h2><small>Ketuk untuk menambah · Seret di meja</small></div>
      <button type="button" className="panel-close-btn" onClick={()=>setDrawer('')} aria-label="Tutup panel">✕</button>
@@ -168,7 +168,7 @@ function Results({state,reset}:{state:ReturnType<typeof initial>;reset:()=>void}
  const finalScore=score(state);
  const summary=finalScore>=90?'Pembacaan dan perhitunganmu akurat.':finalScore>=75?'Tinjau kembali bagian yang masih dikurangi.':'Pelajari kembali pembacaan meniskus dan perhitunganmu.';
  const penalties={ppe:'APD',selection:'Pemilihan alat',procedure:'Prosedur',endpoint:'Titik akhir',meniscus:'Pembacaan meniskus',calculation:'Perhitungan molaritas',time:'Waktu',incomplete:'Tahap belum selesai'} as Record<string,string>;
- return <main className="results content">
+ return <main className="results content"><ProgressRecorder lab="chemistry_titration" mode={state.mode} score={state.mode==='ujian'?finalScore:null}/>
   <header className="result-header"><Link href="/kimia">← Kelas kimia</Link><div><h1>Hasil praktikum</h1><p>{state.mode==='ujian'?'Ujian titrasi asam–basa':'Latihan titrasi asam–basa'}</p></div><div className="result-score" aria-label={`Nilai ${finalScore} dari 100`}><strong>{finalScore}</strong><span>/100</span></div></header>
   <p className="result-summary">{summary}</p>
   {state.expired&&<p className="result-notice">Waktu habis. Tahap yang belum selesai tercatat dalam penilaian.</p>}

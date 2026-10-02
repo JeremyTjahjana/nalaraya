@@ -58,6 +58,16 @@ export function BiologyIcon({ className }: IconProps) {
 export function PhysicsIcon({className}:IconProps){return <svg className={className} viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="4" fill="currentColor"/><ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="currentColor" strokeWidth="2.5"/><ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="currentColor" strokeWidth="2.5" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="currentColor" strokeWidth="2.5" transform="rotate(120 32 32)"/><circle cx="54" cy="35" r="3" fill="currentColor"/></svg>}
 
 export function ToolIcon({id,className}:{id:string;className?:string}){
+ const biology:Record<string,React.ReactNode>={
+  microscope:<><path d="m9 3 4 2-3 6-4-2zM11 7c8 1 9 10 2 12M5 21h14M5 14h9M9 14v5"/><circle cx="17" cy="13" r="2"/></>,
+  slide:<><path d="M3 7h18v10H3z"/><path d="M13 9h6v6h-6z"/></>,
+  coverslip:<path d="m4 8 12-4 4 12-12 4z"/>,
+  onion:<><path d="M10 3h4l-1 4c8 4 8 13-1 14C3 20 3 11 11 7z"/><path d="M11 8c-5 6-5 10 1 13m1-13c5 6 5 10-1 13"/></>,
+  forceps:<path d="M10 3 4 21m8-18 8 18M10 3h2m-5 13 2 1m8-1-2 1"/>,
+  tissue:<><path d="M3 7h18v14H3zM6 7V3h12v4M8 12h8"/><path d="m7 7 5-3 5 3"/></>,
+  lugol:<><path d="M10 2h4v6l4 3v10H6V11l4-3zM8 14h8v4H8z"/></>,
+ };
+ if(biology[id])return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{biology[id]}</svg>;
  if(id==='goggles')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="7" width="8" height="9" rx="3"/><rect x="14" y="7" width="8" height="9" rx="3"/><path d="M10 11h4M2 11H1M22 11h1"/><circle cx="6" cy="11.5" r="1.5" fill="currentColor"/><circle cx="18" cy="11.5" r="1.5" fill="currentColor"/></svg>;
  if(id==='coat')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 3h12l3 5-3 3v10H6V11L3 8l3-5z"/><path d="M9 3v5l3 3 3-3V3M12 11v10"/><rect x="14" y="13" width="3" height="3"/></svg>;
  if(id==='gloves')return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 21v-4L4 13c-.6-.8-.3-2 .5-2.5.8-.6 2-.3 2.5.5l1 2V4c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v6h.5V3c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v7h.5V4.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v9l1 3v4H7z"/></svg>;
@@ -83,4 +93,3 @@ export function FlaskCatalogIcon({className}:{className?:string}){
   <circle cx="18" cy="24" r="0.8" fill="currentColor" />
  </svg>;
 }
-
