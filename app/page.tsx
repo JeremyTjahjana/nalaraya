@@ -9,6 +9,15 @@ import {
   PhysicsIcon,
 } from "@/components/ScienceIcons";
 
+const modelLicense = "https://creativecommons.org/licenses/by/4.0/";
+const modelCredits = [
+  { title: "CC0 - Funnel 3", creator: "plaggy", source: "https://sketchfab.com/3d-models/cc0-funnel-3-9c71ecea8e0941af9f0e7b59895f7fd4", change: "Pratinjau corong; bentuk tidak diubah." },
+  { title: "Rubber Med Gloves (free to download)", creator: "KOMODOZ", source: "https://sketchfab.com/3d-models/rubber-med-gloves-free-to-download-ef128b0efbb1461c8c0f37b83b5f17af", change: "Tekstur pratinjau diperkecil dan data tak terpakai dibersihkan." },
+  { title: "Glasses", creator: "vinigor", source: "https://sketchfab.com/3d-models/glasses-c3d6459e82d647bf990ff05173d9aecb", change: "Tekstur pratinjau diperkecil dan data tak terpakai dibersihkan." },
+  { title: "Chemistry Glassware", creator: "maxdragonn", source: "https://sketchfab.com/3d-models/chemistry-glassware-b8594f7dc7e8442dbaaae7a11da4a962", change: "Node beker dan gelas ukur digunakan dari model yang sama." },
+  { title: "Microscope", creator: "VeeRuby Technologies Pvt Ltd", source: "https://sketchfab.com/3d-models/microscope-2435e338bf7541a4b919e53df50eeeea", change: "Skala dan posisi disesuaikan saat ditampilkan." },
+] as const;
+
 export default function Home() {
   return (
     <>
@@ -37,68 +46,19 @@ export default function Home() {
         </section>
         <section id="tentang" className="about reveal delay-1">
           <div className="about-heading">
-            <h2>Ruang belajar yang lebih merata.</h2>
+            <h2>Lebih banyak kesempatan untuk mencoba.</h2>
             <p className="about-lead">
-              Belajar sains seharusnya berarti mengamati, menyentuh, mencoba,
-              dan menemukan—bukan hanya menghafal langkah dari buku.
+              Alat dan waktu praktikum tidak selalu cukup untuk setiap siswa. Nalaraya memberi ruang
+              untuk mengenali alat, mengulang prosedur, dan membaca hasil sebelum masuk ke laboratorium nyata.
             </p>
           </div>
           <div className="about-story">
-            <p className="large-copy">
-              Namun bagi banyak siswa, praktikum masih menjadi kesempatan yang
-              langka.
-            </p>
+            <p className="large-copy">Coba sendiri. Ulangi sampai paham.</p>
             <p>
-              Laboratorium sekolah dapat memiliki jumlah alat yang terbatas,
-              bahan yang cepat habis, waktu penggunaan yang singkat, atau ruang
-              yang harus dibagi oleh banyak kelas. Dalam kondisi seperti ini,
-              satu kesalahan kecil bisa berarti percobaan harus dihentikan
-              karena tidak ada bahan cadangan.
+              Simulasi ini melengkapi penjelasan guru dan praktikum fisik, bukan menggantikannya.
+              Latih langkahnya di sini, lalu gunakan waktu di laboratorium untuk mengamati dan berdiskusi.
             </p>
-            <p>
-              Siswa akhirnya lebih sering melihat demonstrasi dari jauh daripada
-              memegang alat sendiri. Mereka mengenal nama buret dan pipet,
-              tetapi belum tentu sempat belajar mengatur kran, membaca meniskus,
-              atau memahami mengapa suatu langkah harus dilakukan dengan urutan
-              tertentu.
-            </p>
-            <p>
-              Nalaraya memberi ruang latihan sebelum praktikum nyata. Siswa
-              dapat mengulang prosedur, mencoba keputusan berbeda, dan memahami
-              konsekuensinya tanpa menghabiskan bahan. Guru tetap menjadi
-              pembimbing utama; simulasi ini membantu waktu di laboratorium
-              digunakan untuk diskusi dan pengamatan yang lebih bermakna.
-            </p>
-            <div className="barriers-grid">
-              <article>
-                <b>Alat terbatas</b>
-                <span>
-                  Satu set alat harus digunakan bergantian oleh banyak siswa.
-                </span>
-              </article>
-              <article>
-                <b>Bahan sekali pakai</b>
-                <span>
-                  Kesempatan mencoba ulang sering dibatasi persediaan dan biaya.
-                </span>
-              </article>
-              <article>
-                <b>Waktu singkat</b>
-                <span>
-                  Prosedur panjang harus selesai dalam satu jam pelajaran.
-                </span>
-              </article>
-            </div>
-            <div className="fact-row">
-              <span>
-                <b>Interaktif</b>
-                <small>Alat dapat dipilih, dipindahkan, dan dipasangkan</small>
-              </span>
-              <span>
-                <b>Terarah</b>
-                <small>Latihan dan ujian tersedia dalam satu ruang</small>
-              </span>
-            </div>
+            <a className="text-link" href="#pelajaran">Pilih praktikum <span aria-hidden="true">↗</span></a>
           </div>
         </section>
         <section id="pelajaran" className="subjects reveal delay-2">
@@ -107,7 +67,7 @@ export default function Home() {
               <h2>Pilih mata pelajaran.</h2>
             </div>
             <p>
-              Mulai dari kimia. Ruang biologi dan fisika sedang kami siapkan.
+              Jelajahi kimia dan biologi. Ruang fisika sedang kami siapkan.
             </p>
           </div>
           <div className="subject-grid">
@@ -119,14 +79,14 @@ export default function Home() {
               <p>Titrasi asam–basa kini tersedia untuk dicoba.</p>
               <span className="card-link">Buka ruang kimia ↗</span>
             </Link>
-            <article className="subject-card biology" aria-disabled="true">
+            <Link href="/biologi" className="subject-card biology">
               <div className="subject-mark">
                 <BiologyIcon />
               </div>
               <h3>Biologi</h3>
               <p>Eksplorasi sel dan sistem kehidupan.</p>
-              <span className="card-link">Segera hadir</span>
-            </article>
+              <span className="card-link">Buka ruang biologi ↗</span>
+            </Link>
             <article className="subject-card physics" aria-disabled="true">
               <div className="subject-mark">
                 <PhysicsIcon />
@@ -138,10 +98,20 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer>
-        <Logo />
-        <span>Belajar melalui percobaan.</span>
-        <span>Laboratorium virtual untuk pelajar Indonesia.</span>
+      <footer className="site-footer">
+        <div className="footer-main">
+          <Logo />
+          <p>Belajar melalui percobaan.<br />Selalu gratis.</p>
+        </div>
+        <details className="footer-credits">
+          <summary>Kredit model 3D</summary>
+          <ul>
+            {modelCredits.map(({ title, creator, source, change }) => <li key={source}>
+              <a href={source}>{title}</a> oleh {creator} · <a href={modelLicense}>CC BY 4.0</a>
+              <small>{change}</small>
+            </li>)}
+          </ul>
+        </details>
       </footer>
     </>
   );

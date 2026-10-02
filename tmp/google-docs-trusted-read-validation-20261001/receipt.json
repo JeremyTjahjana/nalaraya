@@ -1,0 +1,31 @@
+{
+  "bridgeVersion": "3.6",
+  "kind": "google-docs-trusted-read-receipt",
+  "status": "complete",
+  "target": {
+    "documentId": "12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "title": "NALARYA - Platform Laboratorium Sains Virtual Interaktif untuk Memperluas Akses Praktikum SMA",
+    "revisionId": "ANLCKQnIxbdwaTOmKeT6n27C7F6Wtrg2-NewTYJOR0SDUEAW6kQL1dp3pvORtWV-MigAwNkMfyNW8wnMcvVV_VolFUErIejj6Xqt3qnAEVo",
+    "documentUrl": "https://docs.google.com/document/d/12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "selectedTabId": "t.0"
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "controlAwareness": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "affectedParagraphCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 1
+    },
+    "preservationRequired": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope."
+  },
+  "warnings": [],
+  "error": null
+}

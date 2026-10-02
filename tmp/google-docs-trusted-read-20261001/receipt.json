@@ -1,0 +1,31 @@
+{
+  "bridgeVersion": "3.6",
+  "kind": "google-docs-trusted-read-receipt",
+  "status": "complete",
+  "target": {
+    "documentId": "12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "title": "NALARYA: Laboratorium Sains Virtual 3D Isometrik Berbasis Web Berkinerja Ringan untuk Demokratisasi Akses Praktikum Sains SMA di Wilayah Pelosok dan 3T Indonesia",
+    "revisionId": "ANLCKQkS05F-b63sQuoTAh3SmwkrRDe0eps4axvBdI1TmNseJvE0_1A9sJIl6pegWuIAy-9wAZJiMH02uBNmlULLTTbR0BsL0UFL-srI8Uc",
+    "documentUrl": "https://docs.google.com/document/d/12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "selectedTabId": "t.0"
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "controlAwareness": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "affectedParagraphCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 1
+    },
+    "preservationRequired": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope."
+  },
+  "warnings": [],
+  "error": null
+}
