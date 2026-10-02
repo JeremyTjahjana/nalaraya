@@ -96,7 +96,7 @@ export default function Home() {
               <h2>Pilih mata pelajaran.</h2>
             </div>
             <p>
-              Mulai dari kimia. Ruang biologi dan fisika sedang kami siapkan.
+              Jelajahi kimia dan biologi. Ruang fisika sedang kami siapkan.
             </p>
           </div>
           <div className="subject-grid">
@@ -108,14 +108,14 @@ export default function Home() {
               <p>Titrasi asam–basa kini tersedia untuk dicoba.</p>
               <span className="card-link">Buka ruang kimia ↗</span>
             </Link>
-            <article className="subject-card biology" aria-disabled="true">
+            <Link href="/biologi" className="subject-card biology">
               <div className="subject-mark">
                 <BiologyIcon />
               </div>
               <h3>Biologi</h3>
               <p>Eksplorasi sel dan sistem kehidupan.</p>
-              <span className="card-link">Segera hadir</span>
-            </article>
+              <span className="card-link">Buka ruang biologi ↗</span>
+            </Link>
             <article className="subject-card physics" aria-disabled="true">
               <div className="subject-mark">
                 <PhysicsIcon />

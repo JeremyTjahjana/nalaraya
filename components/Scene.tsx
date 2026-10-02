@@ -926,7 +926,7 @@ function Item({
   );
 }
 
-function Room() {
+export function Room() {
   return (
     <group>
       <mesh position={[0, -0.1, 0]}>

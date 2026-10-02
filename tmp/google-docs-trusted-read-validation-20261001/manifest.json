@@ -1,0 +1,59 @@
+{
+  "bridgeVersion": "3.6",
+  "kind": "google-docs-trusted-read",
+  "status": "complete",
+  "outputDir": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001",
+  "target": {
+    "documentId": "12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "title": "NALARYA - Platform Laboratorium Sains Virtual Interaktif untuk Memperluas Akses Praktikum SMA",
+    "revisionId": "ANLCKQnIxbdwaTOmKeT6n27C7F6Wtrg2-NewTYJOR0SDUEAW6kQL1dp3pvORtWV-MigAwNkMfyNW8wnMcvVV_VolFUErIejj6Xqt3qnAEVo",
+    "documentUrl": "https://docs.google.com/document/d/12bSuAjf_eeaA0MVgC_FFG2vhLT3Pc99ltbK4JTFk59w",
+    "selectedTabId": "t.0"
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "controlAwareness": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "affectedParagraphCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 1
+    },
+    "preservationRequired": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope."
+  },
+  "warnings": [],
+  "files": {
+    "document_result": {
+      "path": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001/document-result.json",
+      "bytes": 491341,
+      "sha256": "3a97b267a773f20e13b97964cbac5171873cfb33de74f1d956c9cbaba9a282b1"
+    },
+    "control_inventory": {
+      "path": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001/control-inventory.json",
+      "bytes": 1893,
+      "sha256": "d20e62c03406399453aec38b8ba8e8c572da0e228776b55448aa6b4ed01f64e4"
+    },
+    "document_outline": {
+      "path": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001/document-outline.json",
+      "bytes": 78285,
+      "sha256": "bb8548a0aff986f5d6b2fe32a541cbe2d08a22dee240d527f19353a21ecf3dba"
+    },
+    "document_text": {
+      "path": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001/document-text.md",
+      "bytes": 23734,
+      "sha256": "812844cf4f9d59f23a15ffbdc21791967a95b1e9d0ec7db1b4922f32bd3614fd"
+    },
+    "receipt": {
+      "path": "/home/jeremy-tjahjana/Documents/Projects/nalaraya/tmp/google-docs-trusted-read-validation-20261001/receipt.json",
+      "bytes": 1066,
+      "sha256": "d13dd4c39079dae7d21c63cb09514f95451c89b5d3c7ca4b1680809276c88962"
+    }
+  },
+  "error": null
+}
