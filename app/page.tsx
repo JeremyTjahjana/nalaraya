@@ -9,6 +9,15 @@ import {
   PhysicsIcon,
 } from "@/components/ScienceIcons";
 
+const modelLicense = "https://creativecommons.org/licenses/by/4.0/";
+const modelCredits = [
+  { title: "CC0 - Funnel 3", creator: "plaggy", source: "https://sketchfab.com/3d-models/cc0-funnel-3-9c71ecea8e0941af9f0e7b59895f7fd4", change: "Pratinjau corong; bentuk tidak diubah." },
+  { title: "Rubber Med Gloves (free to download)", creator: "KOMODOZ", source: "https://sketchfab.com/3d-models/rubber-med-gloves-free-to-download-ef128b0efbb1461c8c0f37b83b5f17af", change: "Tekstur pratinjau diperkecil dan data tak terpakai dibersihkan." },
+  { title: "Glasses", creator: "vinigor", source: "https://sketchfab.com/3d-models/glasses-c3d6459e82d647bf990ff05173d9aecb", change: "Tekstur pratinjau diperkecil dan data tak terpakai dibersihkan." },
+  { title: "Chemistry Glassware", creator: "maxdragonn", source: "https://sketchfab.com/3d-models/chemistry-glassware-b8594f7dc7e8442dbaaae7a11da4a962", change: "Node beker dan gelas ukur digunakan dari model yang sama." },
+  { title: "Microscope", creator: "VeeRuby Technologies Pvt Ltd", source: "https://sketchfab.com/3d-models/microscope-2435e338bf7541a4b919e53df50eeeea", change: "Skala dan posisi disesuaikan saat ditampilkan." },
+] as const;
+
 export default function Home() {
   return (
     <>
@@ -89,10 +98,20 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer>
-        <Logo />
-        <span>Belajar melalui percobaan.</span>
-        <span>Laboratorium virtual untuk pelajar Indonesia.</span>
+      <footer className="site-footer">
+        <div className="footer-main">
+          <Logo />
+          <p>Belajar melalui percobaan.<br />Selalu gratis.</p>
+        </div>
+        <details className="footer-credits">
+          <summary>Kredit model 3D</summary>
+          <ul>
+            {modelCredits.map(({ title, creator, source, change }) => <li key={source}>
+              <a href={source}>{title}</a> oleh {creator} · <a href={modelLicense}>CC BY 4.0</a>
+              <small>{change}</small>
+            </li>)}
+          </ul>
+        </details>
       </footer>
     </>
   );

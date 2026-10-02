@@ -1,8 +1,8 @@
 export default function HeroArt() {
   return (
-    <div className="hero-art" aria-label="Ilustrasi labu Erlenmeyer dengan cairan bergerak">
+    <div className="hero-art" aria-label="Labu Erlenmeyer">
       <svg viewBox="0 0 520 520" role="img" className="hero-flask-svg">
-        <title>Labu Erlenmeyer dengan larutan yang bergoyang lembut</title>
+        <title>Labu Erlenmeyer</title>
 
         {/* Orbit reference rings */}
         <circle className="art-ring ring-a" cx="260" cy="260" r="205" />

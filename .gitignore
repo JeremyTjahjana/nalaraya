@@ -4,3 +4,6 @@ node_modules/
 .impeccable/
 *.tsbuildinfo
 .env*.local
+DESIGN.md
+CLAUDE.md
+PRODUCT.md
