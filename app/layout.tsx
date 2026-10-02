@@ -12,6 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" data-scroll-behavior="smooth">
       <body>{children}</body>
+      <Analytics />
     </html>
   );
 }
