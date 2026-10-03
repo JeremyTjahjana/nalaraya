@@ -3,4 +3,10 @@ node_modules/
 .vercel/
 .impeccable/
 *.tsbuildinfo
-.env*.local
+.env*
+tmp/
+.agents/
+.codex/
+skills-lock.json
+*.md
+!README.md
