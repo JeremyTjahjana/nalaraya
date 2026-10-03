@@ -3,7 +3,10 @@ node_modules/
 .vercel/
 .impeccable/
 *.tsbuildinfo
-.env*.local
-DESIGN.md
-CLAUDE.md
-PRODUCT.md
+.env*
+tmp/
+.agents/
+.codex/
+skills-lock.json
+*.md
+!README.md

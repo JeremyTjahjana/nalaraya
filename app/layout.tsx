@@ -1,6 +1,7 @@
 import "@fontsource/atkinson-hyperlegible/400.css";
 import "@fontsource/atkinson-hyperlegible/700.css";
 import "./globals.css";
+import "./account.css";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
