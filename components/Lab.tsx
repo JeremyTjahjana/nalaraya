@@ -39,7 +39,7 @@ export default function Lab(){
  const [selected,select]=useState<string|null>(null);
  const [preview,setPreview]=useState('flask');
  const [muted,setMuted]=useState(false);
- const [drawer,setDrawer]=useState<'tools'|'notes'|''>('tools');
+ const [drawer,setDrawer]=useState<'tools'|'notes'|''>('');
  const [cameraMode,setCameraMode]=useState(false);
  const [cameraReset,setCameraReset]=useState(0);
  const [titrationOpen,setTitrationOpen]=useState(false);

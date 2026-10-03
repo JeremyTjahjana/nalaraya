@@ -6042,3 +6042,49 @@ body:has(.course-quiz-dialog[open]) {
 .available .mini-flask {
   color: var(--red);
 }
+
+/* On phones, keep step feedback at the top edge instead of over the experiment. */
+@media (max-width:900px), (max-width:1100px) and (max-height:700px) and (orientation:landscape) {
+  .lab-shell .lab-toast {top:5px !important;left:10px;right:auto;transform:none;width:max-content;max-width:min(220px,48vw) !important;padding:4px 8px 4px 19px;font-size:10.5px;line-height:1.25;border-radius:3px;box-shadow:0 4px 12px #17201918;animation:none;z-index:12}
+  .lab-shell .lab-toast span {left:8px;width:6px;height:6px}
+  .lab-shell .scene-help,.biology-lab .bio-controls {display:none}
+}
+
+/* Phone landscape can report a desktop-sized CSS viewport. Keep the lab in view. */
+@media (max-width:1100px) and (max-height:700px) and (orientation:landscape) {
+  .lab-header {height:44px;min-height:44px;padding:4px 10px;gap:8px}
+  .lab-brand-group {gap:7px;min-width:0}
+  .lab-brand-group .brand-symbol,.lab-brand-group .brand-logo.compact .brand-symbol {width:24px;height:29px}
+  .lab-title {font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lab-mode-badge {display:none}
+  .mobile-tabs {display:flex;align-items:center;gap:4px;flex-shrink:0}
+  .mobile-tabs .tab-btn {font-size:11px;padding:5px 7px;white-space:nowrap}
+  .lab-progress {width:82px;min-width:0;flex-shrink:0;margin-left:auto}
+  .lab-progress label {font-size:10px;margin-bottom:2px}
+  .lab-progress progress {height:4px}
+  .lab-header time {font-size:13px}
+  .lab-header .sound-toggle {width:36px;height:36px;padding:8px;flex-shrink:0}
+  .lab-header .sound-toggle svg {width:18px;height:18px}
+  .lab-header .lab-exit {min-height:36px;padding:6px 11px !important;font-size:12px}
+
+  .lab-body {display:block;height:calc(100dvh - 44px);position:relative;overflow:hidden}
+  .lab-center {height:100%;position:relative;overflow:hidden}
+  .lab-body .inventory,.lab-body .notes {display:flex !important;flex-direction:column;position:fixed !important;top:0 !important;bottom:0 !important;width:min(340px,84vw) !important;height:100dvh !important;z-index:40 !important;background:#fff !important;padding:14px !important;overflow-y:auto !important;box-shadow:0 8px 30px #0003 !important;transition:transform .25s ease-out !important}
+  .lab-body .inventory {left:0 !important;transform:translateX(-100%) !important}
+  .lab-body .inventory.opened {transform:translateX(0) !important}
+  .lab-body .notes {right:0 !important;transform:translateX(100%) !important}
+  .lab-body .notes.opened {transform:translateX(0) !important}
+  .panel-heading .panel-close-btn {display:inline-flex}
+  .drawer-backdrop {display:block !important;position:fixed;inset:0;z-index:35;background:#101a1473}
+
+  .camera-toolbar {bottom:8px !important;left:8px !important;gap:4px !important}
+  .camera-toolbar button {height:36px !important;min-height:36px !important;max-height:36px !important;padding:0 9px !important;font-size:11px !important}
+  .open-titration {padding:7px 10px;font-size:11px}
+}
+
+@media (max-width:650px) and (max-height:700px) and (orientation:landscape) {
+  .lab-progress {display:none}
+  .lab-brand-group {max-width:26%}
+  .lab-title-wrap {min-width:0}
+  .mobile-tabs .tab-badge {display:none}
+}
