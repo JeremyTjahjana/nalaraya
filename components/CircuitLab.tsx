@@ -263,6 +263,11 @@ export default function CircuitLab() {
           <div className="inventory-list">
             {circuitTools.map((t) => {
               const deployed = state.placed.includes(t.id);
+              // led/jumper are gathered at Langkah 1, then assembled on the board step by step via
+              // the scene token or the keyboard "Rangkai" control — so their badge guides to the
+              // board rather than implying the panel click finished the placement.
+              const assembleOnBoard =
+                deployed && (t.id === "led" || t.id === "jumper");
               return (
                 <button
                   key={t.id}
@@ -297,7 +302,11 @@ export default function CircuitLab() {
                   <span
                     className={`item-badge${deployed ? " active-badge" : ""}`}
                   >
-                    {deployed ? "✓ Di papan" : "⋮⋮ Pasang"}
+                    {assembleOnBoard
+                      ? "⋮⋮ Rakit di papan"
+                      : deployed
+                        ? "✓ Di papan"
+                        : "⋮⋮ Pasang"}
                   </span>
                 </button>
               );
@@ -533,8 +542,8 @@ export default function CircuitLab() {
               <p>
                 Rakit rangkaian sesuai urutan langkah, tutup sakelar agar lampu
                 menyala, lalu jawab soal perhitungan hukum Ohm. Gunakan I = V/R
-                dan aturan hambatan seri (dijumlahkan) serta paralel
-                (1/R_total = Σ 1/R).
+                dan aturan hambatan seri (dijumlahkan) serta paralel (1/R_total
+                = Σ 1/R).
               </p>
               <section className="phys-quiz">
                 <h2>Soal perhitungan</h2>
@@ -556,9 +565,7 @@ export default function CircuitLab() {
                     ))}
                   </fieldset>
                 ))}
-                <button
-                  onClick={() => dispatch({ type: "submit" })}
-                >
+                <button onClick={() => dispatch({ type: "submit" })}>
                   Kumpulkan hasil ujian
                 </button>
               </section>
@@ -668,16 +675,11 @@ function ReadoutPanel({ state }: { state: State }) {
   );
 }
 
-function CircuitResults({
-  state,
-  reset,
-}: {
-  state: State;
-  reset: () => void;
-}) {
+function CircuitResults({ state, reset }: { state: State; reset: () => void }) {
   const [saveFailed, setSaveFailed] = useState(false);
   useEffect(() => {
-    if (!savePhysicsCircuitsCompletion(window.localStorage)) setSaveFailed(true);
+    if (!savePhysicsCircuitsCompletion(window.localStorage))
+      setSaveFailed(true);
   }, []);
   const config = configForStep[state.step];
   return (
