@@ -1,2 +1,24 @@
-import Link from 'next/link';import Header from '@/components/Header';import Ambient from '@/components/Ambient';import ChemistryCatalog from '@/components/ChemistryCatalog';
-export default function Chemistry(){return <><Header/><main className="content inner-page chemistry-page"><Ambient/><Link className="back reveal" href="/">← Semua pelajaran</Link><section className="page-intro reveal"><h1>Kimia</h1><p className="large-copy">Kenali zatnya, amati perubahannya, lalu pahami apa yang terjadi.</p></section><ChemistryCatalog/></main></>}
+import Link from "next/link";
+import Header from "@/components/Header";
+import Ambient from "@/components/Ambient";
+import ChemistryCatalog from "@/components/ChemistryCatalog";
+export default function Chemistry() {
+  return (
+    <>
+      <Header />
+      <main className="content inner-page chemistry-page">
+        <Ambient />
+        <Link className="back reveal" href="/">
+          ← Semua pelajaran
+        </Link>
+        <section className="page-intro reveal">
+          <h1>Kimia</h1>
+          <p className="large-copy">
+            Kenali zatnya, amati perubahannya, lalu pahami apa yang terjadi.
+          </p>
+        </section>
+        <ChemistryCatalog />
+      </main>
+    </>
+  );
+}
