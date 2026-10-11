@@ -11,6 +11,20 @@ import { Component, ReactNode, useRef, useState } from "react";
 import * as THREE from "three";
 import { type State, configForStep } from "@/lib/circuits";
 import {
+  type Vec3,
+  BOARD_CENTER,
+  BATTERY_POS,
+  SWITCH_POS,
+  BATTERY_PLUS,
+  BATTERY_MINUS,
+  RAIL_PLUS,
+  RAIL_MINUS,
+  SLOT_Y,
+  SLOTS,
+  EXPECTED_FOR_STEP,
+  resolveDragUp,
+} from "@/lib/circuitScene";
+import {
   BatteryModel,
   BoardModel,
   JumperModel,
@@ -18,60 +32,9 @@ import {
   SwitchModel,
 } from "./CircuitModels";
 
-type Vec3 = [number, number, number];
-
-// --- Shared world-space geometry (single source of truth for tokens, slots and jumpers) ---
-// Board group origin and the battery group origin. Child-mesh offsets below are read straight
-// from CircuitModels so endpoints actually touch the geometry (bug C).
-const BOARD_CENTER: Vec3 = [0, 0.1, 0];
-const BATTERY_POS: Vec3 = [-1.55, 0.3, 0];
-const SWITCH_POS: Vec3 = [0.95, 0.09, -0.5];
-
-// Battery terminal nubs: local x=±0.5, y=0 inside the battery group (CircuitModels BatteryModel).
-const BATTERY_PLUS: Vec3 = [
-  BATTERY_POS[0] + 0.5,
-  BATTERY_POS[1],
-  BATTERY_POS[2],
-];
-const BATTERY_MINUS: Vec3 = [
-  BATTERY_POS[0] - 0.5,
-  BATTERY_POS[1],
-  BATTERY_POS[2],
-];
-// Board rails: local y=0.045, z=∓0.56 inside the board group (CircuitModels BoardModel). The red
-// (+) rail sits at z=-0.56, the blue (−) rail at z=+0.56. Pick an x near the battery side.
-const RAIL_Y = BOARD_CENTER[1] + 0.045;
-const RAIL_X = -0.9;
-const RAIL_PLUS: Vec3 = [RAIL_X, RAIL_Y, BOARD_CENTER[2] - 0.56];
-const RAIL_MINUS: Vec3 = [RAIL_X, RAIL_Y, BOARD_CENTER[2] + 0.56];
-
-const SLOT_Y = BOARD_CENTER[1] + 0.02;
-const SLOT_RADIUS = 0.6;
-// Fixed board slots (named nodes). Drops snap to the nearest slot within SLOT_RADIUS; the slot id
-// is the `target` the onConnect dispatch sends (matching lib/circuits connectForStep / challengeTargetSlots).
-const SLOTS: Record<string, Vec3> = {
-  rail: [RAIL_X, SLOT_Y, BOARD_CENTER[2] - 0.56],
-  seri: [-0.5, SLOT_Y, 0.1],
-  paralel: [0.1, SLOT_Y, 0.1],
-  "paralel-1": [0.5, SLOT_Y, -0.18],
-  "paralel-2": [0.5, SLOT_Y, 0.38],
-};
-
-// Mirror of the reducer's connectForStep (by state.step): the component the current step expects
-// and the slot it must drop onto. Derived here from the same literals as CircuitLab's
-// CONNECT_SOURCES/CONNECT_TARGETS — NOT imported from reducer internals.
-const EXPECTED_FOR_STEP: Record<number, { source: string; target: string }> = {
-  1: { source: "jumper", target: "rail" },
-  2: { source: "ledA", target: "seri" },
-  3: { source: "ledB", target: "seri" },
-  4: { source: "ledC", target: "paralel" },
-  5: { source: "ledB", target: "paralel-1" },
-  6: { source: "ledC", target: "paralel-2" },
-};
-
-// Tray position where the pending token floats, just in front of the board so it never overlaps
-// the slots or the battery and stays inside the framed content extent.
-const TRAY_POS: Vec3 = [0, 0.3, 0.95];
+// Tray position where the pending token rests, in front of the board so it never overlaps the
+// slots or the battery while staying inside the fixed framed extent (z within [-0.65,0.65]).
+const TRAY_POS: Vec3 = [0.95, 0.32, 0.5];
 
 // Which LED slots are populated at each config, mapped to the readout.lamps order.
 const ledSlotsForConfig: Record<string, string[]> = {
@@ -86,6 +49,9 @@ const ledSlotsForConfig: Record<string, string[]> = {
 
 type Props = {
   state: State;
+  // onConnect and onDrop are both bound to CircuitLab's connect() so the mouse-drop and the
+  // keyboard "Rangkai" paths reach the SAME dispatch. The scene only needs one of them (onDrop),
+  // but the prop is kept for the keyboard parity binding in CircuitLab.
   onConnect: (source: string, target: string) => void;
   onDrop: (source: string, target: string) => void;
   onClick: (id: string) => void;
@@ -113,27 +79,15 @@ function World({ state, onDrop, onClick, cameraMode, reduced }: Props) {
   const hit = (e: ThreeEvent<PointerEvent>) =>
     e.ray.intersectPlane(plane, new THREE.Vector3());
 
-  // Snap a dropped point to the nearest named slot within radius.
-  function nearestSlot(point: THREE.Vector3): string | null {
-    let best: string | null = null;
-    let bestDist = SLOT_RADIUS;
-    for (const [id, pos] of Object.entries(SLOTS)) {
-      const d = Math.hypot(point.x - pos[0], point.z - pos[2]);
-      if (d < bestDist) {
-        bestDist = d;
-        best = id;
-      }
-    }
-    return best;
-  }
-
   function down(e: ThreeEvent<PointerEvent>, id: string) {
     if (cameraMode) return;
     e.stopPropagation();
     const p = hit(e);
     if (!p) return;
+    // Record the grab point only; do NOT move the token yet (mirror BiologyScene: movement
+    // happens in move() once the pointer has travelled far enough to count as a drag). This keeps
+    // the token resting at TRAY_POS for a bare click (which falls through to onClick in up()).
     drag.current = { id, start: p.clone(), moved: false };
-    setHeld([p.x, 0.3, p.z]);
     (e.target as Element).setPointerCapture?.(e.pointerId);
   }
   function move(e: ThreeEvent<PointerEvent>) {
@@ -152,14 +106,18 @@ function World({ state, onDrop, onClick, cameraMode, reduced }: Props) {
     drag.current = null;
     setHeld(null);
     (e.target as Element).releasePointerCapture?.(e.pointerId);
-    if (!d.moved) {
-      onClick(d.id);
-      return;
-    }
     const p = hit(e);
-    if (!p) return;
-    const slot = nearestSlot(p);
-    if (slot) onDrop(d.id, slot);
+    // Resolve the pointer-up through the pure helper (unit-tested in lib/circuitScene.test.ts):
+    // bare click → onClick(select/toggle); dragged onto a slot → onDrop(id, slot) which is the
+    // SAME connect dispatch the keyboard "Rangkai" button fires; dragged off every slot → no-op.
+    const release = p ? { x: p.x, z: p.z } : { x: d.start.x, z: d.start.z };
+    const outcome = resolveDragUp(
+      { id: d.id, start: [d.start.x, d.start.y, d.start.z], moved: d.moved },
+      release.x,
+      release.z,
+    );
+    if (outcome.kind === "click") onClick(outcome.id);
+    else if (outcome.kind === "drop") onDrop(outcome.id, outcome.target);
   }
 
   return (
@@ -173,6 +131,16 @@ function World({ state, onDrop, onClick, cameraMode, reduced }: Props) {
           at every viewport width (bug A). <Bounds observe> refits on resize, mirroring ToolPreview;
           OrbitControls stays usable but clamped below. */}
       <Bounds fit clip observe margin={1.2}>
+        {/* Fixed framing anchor (invisible): pins <Bounds fit> to the full known content extent
+            — x∈[-2.1,1.4], y∈[-0.1,0.6], z∈[-0.65,0.65] (board + battery + arched jumpers + slots)
+            — so the frame stays stable as LEDs/jumpers/the ring appear per langkah instead of
+            re-zooming between steps (review bug-A refit note). `visible={false}` keeps it out of
+            the render but Box3 still counts it toward the fit. */}
+        <mesh position={[-0.35, 0.25, 0]} visible={false}>
+          <boxGeometry args={[3.5, 0.7, 1.3]} />
+          <meshBasicMaterial />
+        </mesh>
+
         {/* Board (always present once placed; shown from the start as the work surface). */}
         <group position={BOARD_CENTER}>
           <BoardModel />
@@ -232,7 +200,8 @@ function World({ state, onDrop, onClick, cameraMode, reduced }: Props) {
         )}
 
         {/* Target-slot marker ring for the current step, so the user sees where to drop the token
-            (mirrors BiologyScene's step-1 ring). Hidden while actively dragging to reduce clutter. */}
+            (mirrors BiologyScene's step-1 ring). Hidden while actively dragging to reduce clutter.
+            This marker is static per step, so keeping it inside Bounds does not shift the fit. */}
         {expected && !cameraMode && !held && (
           <mesh
             position={[
@@ -246,48 +215,34 @@ function World({ state, onDrop, onClick, cameraMode, reduced }: Props) {
             <meshBasicMaterial color="#d08400" transparent opacity={0.85} />
           </mesh>
         )}
-
-        {/* The pending token the current step expects: a real draggable component (bug B). It
-            carries the id EXPECTED_FOR_STEP[step].source so a drop dispatches the exact connect the
-            reducer waits for (jumper→rail at step 1, ledA→seri at step 2, … ledC→paralel-2 at 6). */}
-        {expected && !held && (
-          <group
-            position={TRAY_POS}
-            onPointerDown={(e) => down(e, expected.source)}
-            onPointerMove={move}
-            onPointerUp={up}
-            onPointerOver={() => setHover("token")}
-            onPointerOut={() => setHover(null)}
-          >
-            {expected.source === "jumper" ? (
-              <JumperModel
-                from={[-0.26, 0, 0]}
-                to={[0.26, 0, 0]}
-                polarity="plus"
-              />
-            ) : (
-              <LedModel brightness={0} reduced={reduced} />
-            )}
-          </group>
-        )}
       </Bounds>
 
-      {/* The component currently being dragged, floating under the pointer (outside Bounds so it
-          doesn't influence the fit computation). */}
-      {held && drag.current && (
-        <group position={held}>
-          {drag.current.id === "jumper" ? (
+      {/* The pending token the current step expects: a real draggable component (bug B). It
+          carries the id EXPECTED_FOR_STEP[step].source so a drop dispatches the exact connect the
+          reducer waits for (jumper→rail at step 1, ledA→seri at step 2, … ledC→paralel-2 at 6).
+
+          CRITICAL (review fix): this ONE interactive group stays mounted for the whole drag —
+          its position follows `held` while dragging and rests at TRAY_POS otherwise — so the
+          onPointerMove/onPointerUp handlers and the R3F pointer capture survive to completion,
+          mirroring BiologyScene's MovingTool (which never unmounts the dragged node). It also
+          lives OUTSIDE <Bounds> so dragging it never influences the fit computation. */}
+      {expected && (
+        <group
+          position={held ?? TRAY_POS}
+          onPointerDown={(e) => down(e, expected.source)}
+          onPointerMove={move}
+          onPointerUp={up}
+          onPointerOver={() => setHover("token")}
+          onPointerOut={() => setHover(null)}
+        >
+          {expected.source === "jumper" ? (
             <JumperModel
               from={[-0.26, 0, 0]}
               to={[0.26, 0, 0]}
               polarity="plus"
             />
-          ) : drag.current.id === "battery" ? (
-            <BatteryModel />
-          ) : drag.current.id === "switch" ? (
-            <SwitchModel on={state.switchOn} reduced={reduced} />
           ) : (
-            <LedModel brightness={state.switchOn ? 1 : 0} reduced={reduced} />
+            <LedModel brightness={0} reduced={reduced} />
           )}
         </group>
       )}
