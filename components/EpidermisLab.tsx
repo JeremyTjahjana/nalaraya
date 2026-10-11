@@ -17,12 +17,14 @@ import {
 import { playLabSound, type SoundKind } from "@/lib/labSound";
 import MicroscopeView from "./MicroscopeView";
 import ProgressRecorder from "./ProgressRecorder";
+import LabOrientationGate, { useLabLandscape } from "./LabOrientationGate";
 const Scene = dynamic(() => import("./BiologyScene"), {
   ssr: false,
   loading: () => <p className="loading">Menyiapkan meja…</p>,
 });
 const Preview = dynamic(() => import("./ToolPreview"), { ssr: false });
 export default function EpidermisLab() {
+  const landscape = useLabLandscape();
   const mode = useSearchParams().get("mode") === "ujian" ? "ujian" : "latihan";
   const [state, dispatch] = useReducer(reducer, mode, initial);
   const [drawer, setDrawer] = useState<"tools" | "notes" | "">("");
@@ -52,7 +54,7 @@ export default function EpidermisLab() {
     };
   }, []);
   useEffect(() => {
-    if (state.finished || mode !== "ujian") return;
+    if (!landscape || state.finished || mode !== "ujian") return;
     let last = Date.now();
     const timer = setInterval(() => {
       const now = Date.now(),
@@ -63,7 +65,7 @@ export default function EpidermisLab() {
       }
     }, 250);
     return () => clearInterval(timer);
-  }, [mode, state.finished]);
+  }, [landscape, mode, state.finished]);
   useEffect(() => {
     if (!snapshots.current[state.step])
       snapshots.current[state.step] = structuredClone(state);
@@ -149,6 +151,8 @@ export default function EpidermisLab() {
     setScope(false);
     setSelected("");
   }
+  if (!landscape)
+    return <LabOrientationGate backHref="/biologi/epidermis-bawang" />;
   if (state.finished) return <EpidermisResults state={state} reset={reset} />;
   const item = epidermisTools.find((t) => t.id === preview)!;
   const progress = Math.round((state.step / 11) * 100);

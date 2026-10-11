@@ -9,6 +9,7 @@ import Logo from "./Logo";
 import { ToolIcon } from "./ScienceIcons";
 import { playLabSound, type SoundKind } from "@/lib/labSound";
 import ProgressRecorder from "./ProgressRecorder";
+import LabOrientationGate, { useLabLandscape } from "./LabOrientationGate";
 
 const Scene = dynamic(() => import("./Scene"), {
   ssr: false,
@@ -36,6 +37,7 @@ const stepDetails = [
 ];
 
 export default function Lab() {
+  const landscape = useLabLandscape();
   const params = useSearchParams();
   const mode = params.get("mode") === "ujian" ? "ujian" : "latihan";
   const [state, dispatch] = useReducer(reducer, mode, initial);
@@ -60,7 +62,8 @@ export default function Lab() {
   const tipHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    start.current = Date.now();
+    if (!landscape) return;
+    start.current = Date.now() - (600 - state.remaining) * 1000;
     const interval = setInterval(
       () =>
         dispatch({
@@ -70,7 +73,7 @@ export default function Lab() {
       500,
     );
     return () => clearInterval(interval);
-  }, []);
+  }, [landscape]);
 
   useEffect(() => {
     if (state.step !== 8 || !state.mixed || !endpoint(state)) return;
@@ -154,6 +157,7 @@ export default function Lab() {
 
   const item = tools.find((tool) => tool.id === preview)!;
   const progress = state.finished ? 100 : Math.round((state.step / 10) * 100);
+  if (!landscape) return <LabOrientationGate backHref="/kimia/titrasi" />;
   if (state.finished) return <Results state={state} reset={reset} />;
 
   return (

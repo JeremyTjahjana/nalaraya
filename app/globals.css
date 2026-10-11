@@ -1051,79 +1051,6 @@ time {
   }
 }
 
-@media (max-width: 900px) and (orientation: portrait) {
-  .lab-body {
-    display: flex;
-    flex-direction: column;
-    height: calc(100dvh - 52px - 44px);
-    overflow: hidden;
-    position: relative;
-  }
-
-  .lab-center {
-    flex: none;
-    height: 42dvh;
-    min-height: 220px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .scene {
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .inventory,
-  .notes {
-    position: static;
-    display: none;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    border: none;
-    box-shadow: none;
-    padding: 14px 12px;
-  }
-
-  .inventory.opened,
-  .notes.opened {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .inventory-list {
-    max-height: none;
-    overflow: visible;
-  }
-
-  .panel-heading .panel-close-btn {
-    display: none;
-  }
-
-  .lab-body:not(.drawer-tools):not(.drawer-notes) .lab-center {
-    flex: 1;
-    height: 100%;
-    border-bottom: none;
-  }
-
-  .tool-info {
-    position: fixed !important;
-    left: 10px !important;
-    right: 10px !important;
-    top: auto !important;
-    bottom: 10px !important;
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    max-height: 75dvh !important;
-    transform: none !important;
-    border-radius: 12px;
-    box-shadow: 0 12px 36px #0005;
-    z-index: 60;
-    pointer-events: auto !important;
-  }
-}
-
 @media (max-width: 900px) and (orientation: landscape) {
   .lab-body {
     position: relative;
@@ -5318,6 +5245,61 @@ button,
   color: #fff;
 }
 
+.lab-orientation-gate {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(28px, env(safe-area-inset-top))
+    max(28px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom))
+    max(28px, env(safe-area-inset-left));
+  background: #fff;
+  text-align: center;
+}
+
+.lab-orientation-content {
+  max-width: 440px;
+}
+
+.lab-orientation-content svg {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 22px;
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lab-orientation-content h1 {
+  margin: 0 0 12px;
+  font-size: clamp(27px, 6vw, 34px);
+  line-height: 1.15;
+}
+
+.lab-orientation-content p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.lab-orientation-content a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 9px 16px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.lab-orientation-content a:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
 @media (max-width: 1180px) and (min-width: 901px) {
   .lab-body {
     grid-template-columns: 250px minmax(320px, 1fr) 270px;
@@ -6092,10 +6074,11 @@ body:has(.course-quiz-dialog[open]) {
 /* Phone landscape can report a desktop-sized CSS viewport. Keep the lab in view. */
 @media (max-width: 1100px) and (max-height: 700px) and (orientation: landscape) {
   .lab-header {
-    height: 44px;
-    min-height: 44px;
-    padding: 4px 10px;
-    gap: 8px;
+    height: 56px;
+    min-height: 56px;
+    padding: 6px max(10px, env(safe-area-inset-right)) 6px
+      max(10px, env(safe-area-inset-left));
+    gap: 10px;
   }
   .lab-brand-group {
     gap: 7px;
@@ -6107,7 +6090,7 @@ body:has(.course-quiz-dialog[open]) {
     height: 29px;
   }
   .lab-title {
-    font-size: 13px;
+    font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -6118,13 +6101,22 @@ body:has(.course-quiz-dialog[open]) {
   .mobile-tabs {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
   }
   .mobile-tabs .tab-btn {
-    font-size: 11px;
-    padding: 5px 7px;
+    min-height: 44px;
+    font-size: 13px;
+    padding: 0 12px;
     white-space: nowrap;
+    border-color: #aeb8ae;
+    background: #fff;
+    color: #24352a;
+  }
+  .mobile-tabs .tab-btn.active {
+    background: #1a2e26;
+    border-color: #1a2e26;
+    color: #fff;
   }
   .lab-progress {
     width: 82px;
@@ -6147,6 +6139,9 @@ body:has(.course-quiz-dialog[open]) {
     height: 44px;
     padding: 8px;
     flex-shrink: 0;
+    border: 1px solid #d4dad0;
+    border-radius: 8px;
+    background: #fff;
   }
   .lab-header .sound-toggle svg {
     width: 18px;
@@ -6154,13 +6149,16 @@ body:has(.course-quiz-dialog[open]) {
   }
   .lab-header .lab-exit {
     min-height: 44px;
-    padding: 6px 11px !important;
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 14px !important;
+    border-radius: 8px;
+    font-size: 13px;
   }
 
   .lab-body {
     display: block;
-    height: calc(100dvh - 44px);
+    height: calc(100dvh - 56px);
     position: relative;
     overflow: hidden;
   }
@@ -6201,6 +6199,8 @@ body:has(.course-quiz-dialog[open]) {
   }
   .panel-heading .panel-close-btn {
     display: inline-flex;
+    width: 44px;
+    height: 44px;
   }
   .drawer-backdrop {
     display: block !important;
@@ -6211,76 +6211,28 @@ body:has(.course-quiz-dialog[open]) {
   }
 
   .camera-toolbar {
-    bottom: 8px !important;
-    left: 8px !important;
-    gap: 4px !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    left: max(8px, env(safe-area-inset-left)) !important;
+    max-height: none;
+    gap: 6px !important;
   }
   .camera-toolbar button {
     height: 44px !important;
     min-height: 44px !important;
     max-height: 44px !important;
-    padding: 0 9px !important;
-    font-size: 11px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    font-weight: 600;
+    border-color: #aeb8ae;
+    background: #fff;
+    box-shadow: 0 3px 10px #17201920;
   }
   .open-titration {
     min-height: 44px;
     padding: 7px 10px;
     font-size: 11px;
-  }
-}
-
-@media (max-width: 900px) and (orientation: portrait) {
-  .lab-shell .lab-header {
-    height: auto;
-    min-height: 100px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 44px auto;
-    grid-template-areas:
-      "brand sound exit"
-      "tabs tabs progress";
-    gap: 4px 8px;
-    padding: 7px 10px;
-  }
-  .lab-header .lab-brand-group {
-    grid-area: brand;
-    min-width: 0;
-  }
-  .lab-header .lab-title-wrap,
-  .lab-header .lab-title {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .lab-header .sound-toggle {
-    grid-area: sound;
-  }
-  .lab-header .lab-exit {
-    grid-area: exit;
-  }
-  .lab-header .mobile-tabs {
-    grid-area: tabs;
-    min-width: 0;
-  }
-  .lab-header .lab-progress {
-    grid-area: progress;
-    margin: 0;
-  }
-  .lab-shell .lab-body {
-    height: auto;
-    flex: 1;
-    min-height: 0;
-  }
-  .lab-shell .camera-toolbar button {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
-  }
-  .lab-shell .open-titration {
-    min-height: 44px;
-  }
-  .biology-lab .bio-controls {
-    display: block;
-    flex: none;
   }
 }
 
