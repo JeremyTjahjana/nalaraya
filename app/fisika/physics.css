@@ -1,0 +1,21 @@
+.physics-page,.physics-lab{--amber:#f59e0b}
+.physics-page .back{margin-bottom:16px}.physics-page .page-intro:after{background:#f59e0b}.physics-page .catalog-card:not(.available) .catalog-status{color:#64645e}
+.physics-page{max-width:1240px}.physics-page .page-intro{padding:20px 0 44px}.physics-page .catalog-status{color:#b45309}
+.physics-page .catalog-status.status-passed{background:#fdf3e0;color:#8a4a06;border:1px solid #f3d9a4}
+.phys-hex{width:48px;height:52px;flex-shrink:0;display:grid;place-items:center;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:#fdf3e0;color:#b45309}.phys-hex svg{width:30px;height:30px}.catalog-card>.phys-hex{width:58px;height:64px;margin:22px 0}
+.physics-lab .inventory-item.active{background:#fdf6ea;border-color:#e2b878}.physics-lab .inventory-item.active .item-icon-box{border-color:#d08a16;color:#b45309}.physics-lab .tool-category-badge{color:#8a4a06;background:#fdf3e0;border-color:#f3d9a4}
+.physics-lab .scene{isolation:isolate;overflow:hidden}.physics-lab .phys-controls{position:relative;z-index:2;background:#fff;padding:8px 14px;border-top:1px solid var(--line);font-size:12px}.phys-controls details{margin-top:6px}.phys-controls summary{cursor:pointer;padding:5px 0;font-size:14px}.phys-controls details>div{display:flex;align-items:end;gap:8px;padding-bottom:5px}.phys-controls label{flex:1;min-width:0}.phys-controls select{display:block;width:100%;min-height:38px;font-size:13px}.phys-controls p{font-size:13px;margin:8px 0}.phys-controls progress{display:block;width:100%;height:8px;accent-color:#b45309}
+
+.physics-lab :focus-visible,.physics-page :focus-visible{outline:2px solid #d08a16;outline-offset:3px}
+.physics-page .experiment-intro h1{font-size:clamp(32px,4vw,48px);line-height:1.15;max-width:24ch}
+.physics-lab .item-name{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+.physics-lab .lab-toast{top:88px;max-width:calc(100% - 32px)}
+.physics-lab .notes>section{margin-top:24px}
+.circuit-results dl{display:block}
+.circuit-results dl dt,.circuit-results dl dd{border:0;padding:0}
+.physics-lab ::selection{background:#fbe3b2;color:#432b05}.physics-lab aside{scrollbar-color:#d8b482 #fff;scrollbar-width:thin}
+.physics-lab .item-icon-box{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.circuit-results{max-width:840px;padding-top:36px;padding-bottom:60px}.circuit-results h1{font-size:32px;margin:36px 0 16px}.circuit-results h2{font-size:22px;margin:32px 0 14px}.circuit-results p{font-size:17px;line-height:1.7}.circuit-results .result-score{display:flex;gap:24px;align-items:center}.circuit-results dl>div{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--line)}.circuit-results dd{margin:0;font-variant-numeric:tabular-nums}.circuit-results details{margin:32px 0}.circuit-results summary{cursor:pointer}.circuit-results li{margin:8px 0}.result-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+@media(max-width:520px){.physics-page .page-intro h1{font-size:32px}.physics-page .large-copy{font-size:20px}.circuit-results dl>div{flex-wrap:wrap;gap:8px}}
+@media(max-width:900px){.physics-lab .phys-controls{padding:4px 12px}.physics-lab .phys-controls details[open]{position:absolute;bottom:0;left:0;right:0;padding:12px;background:#fff;z-index:4;border-top:1px solid #ead9b8}}
+@media(prefers-reduced-motion:reduce){.physics-lab *{animation:none!important;transition:none!important}}
