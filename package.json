@@ -1,1 +1,32 @@
-{"name":"nalaraya","version":"0.1.0","private":true,"scripts":{"dev":"next dev --hostname localhost","build":"next build","start":"next start --hostname 0.0.0.0","test":"vitest run"},"dependencies":{"@fontsource/atkinson-hyperlegible":"^5.2.0","@react-three/drei":"^10.7.0","@react-three/fiber":"^9.3.0","@supabase/ssr":"^0.12.7","@supabase/supabase-js":"^2.117.2","@vercel/analytics":"^2.0.1","next":"^16.3.7","react":"^19.1.0","react-dom":"^19.1.0","three":"^0.180.0"},"devDependencies":{"@types/node":"^22.0.0","@types/react":"^19.1.0","@types/react-dom":"^19.1.0","@types/three":"^0.180.0","typescript":"^5.9.0","vitest":"^5.0.2"}}
+{
+  "name": "nalaraya",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname localhost",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/atkinson-hyperlegible": "^5.2.0",
+    "@react-three/drei": "^10.7.0",
+    "@react-three/fiber": "^9.3.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.2",
+    "@vercel/analytics": "^2.0.1",
+    "next": "^16.3.7",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.180.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.2"
+  }
+}

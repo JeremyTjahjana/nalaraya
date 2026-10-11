@@ -1,6 +1,65 @@
-export type SoundKind='touch'|'confirm'|'stage'|'endpoint'|'dose'|'swirl'|'error'|'clink'|'pour'|'drop'|'dry';
+export type SoundKind =
+  | "touch"
+  | "confirm"
+  | "stage"
+  | "endpoint"
+  | "dose"
+  | "swirl"
+  | "error"
+  | "clink"
+  | "pour"
+  | "drop"
+  | "dry";
 /** Shared synthetic sounds for Chemistry and Biology. No audio assets or decoders. */
-export function playLabSound(ctx:AudioContext,kind:SoundKind){
- const notes={touch:[360],confirm:[520],stage:[659,880],endpoint:[880,1174],dose:[920],swirl:[230,300,380],error:[170],clink:[1280,1760],pour:[310,270,230],drop:[940],dry:[180,240,190]}[kind];
- notes.forEach((frequency,index)=>{const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type=kind==='error'?'sawtooth':kind==='swirl'||kind==='pour'||kind==='dry'?'sine':kind==='clink'?'square':'triangle';oscillator.frequency.value=frequency;oscillator.connect(gain);gain.connect(ctx.destination);const time=ctx.currentTime+index*(kind==='pour'?.055:.08);if(kind==='drop'||kind==='dose')oscillator.frequency.exponentialRampToValueAtTime(280,time+.16);gain.gain.setValueAtTime(kind==='touch'||kind==='clink'||kind==='dry'?.035:.075,time);gain.gain.exponentialRampToValueAtTime(.001,time+((kind==='stage'||kind==='endpoint')?.55:kind==='pour'?.32:.2));oscillator.start(time);oscillator.stop(time+.6);oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();};});
+export function playLabSound(ctx: AudioContext, kind: SoundKind) {
+  const notes = {
+    touch: [360],
+    confirm: [520],
+    stage: [659, 880],
+    endpoint: [880, 1174],
+    dose: [920],
+    swirl: [230, 300, 380],
+    error: [170],
+    clink: [1280, 1760],
+    pour: [310, 270, 230],
+    drop: [940],
+    dry: [180, 240, 190],
+  }[kind];
+  notes.forEach((frequency, index) => {
+    const oscillator = ctx.createOscillator(),
+      gain = ctx.createGain();
+    oscillator.type =
+      kind === "error"
+        ? "sawtooth"
+        : kind === "swirl" || kind === "pour" || kind === "dry"
+          ? "sine"
+          : kind === "clink"
+            ? "square"
+            : "triangle";
+    oscillator.frequency.value = frequency;
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+    const time = ctx.currentTime + index * (kind === "pour" ? 0.055 : 0.08);
+    if (kind === "drop" || kind === "dose")
+      oscillator.frequency.exponentialRampToValueAtTime(280, time + 0.16);
+    gain.gain.setValueAtTime(
+      kind === "touch" || kind === "clink" || kind === "dry" ? 0.035 : 0.075,
+      time,
+    );
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      time +
+        (kind === "stage" || kind === "endpoint"
+          ? 0.55
+          : kind === "pour"
+            ? 0.32
+            : 0.2),
+    );
+    oscillator.start(time);
+    oscillator.stop(time + 0.6);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gain.disconnect();
+    };
+  });
 }

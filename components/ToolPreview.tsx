@@ -1,6 +1,12 @@
 "use client";
 
-import { Bounds, Center, Clone, OrbitControls, useGLTF } from "@react-three/drei";
+import {
+  Bounds,
+  Center,
+  Clone,
+  OrbitControls,
+  useGLTF,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Component, ReactNode, Suspense, useEffect, useState } from "react";
 import type { Object3D } from "three";
@@ -14,10 +20,10 @@ import { epidermisTools } from "@/lib/epidermis";
 const equipmentIds = new Set<string>(equipment.map((item) => item.id));
 
 function GeometryFallback({ id }: { id: string }) {
-  if (id === 'pipette') return <Model id="pipette" active/>;
-  if (id === 'microscope') return <MicroscopeFallback/>;
+  if (id === "pipette") return <Model id="pipette" active />;
+  if (id === "microscope") return <MicroscopeFallback />;
   const biologyTool = epidermisTools.find((item) => item.id === id);
-  if (biologyTool && !['goggles', 'coat', 'gloves', 'waste'].includes(id)) {
+  if (biologyTool && !["goggles", "coat", "gloves", "waste"].includes(id)) {
     return <BiologyModel id={id} />;
   }
   return equipmentIds.has(id) ? (
@@ -29,8 +35,10 @@ function GeometryFallback({ id }: { id: string }) {
 
 function GltfModel({ asset }: { asset: PreviewAsset }) {
   const { nodes, scene } = useGLTF(asset.path);
-  const object = (asset.node ? nodes[asset.node] : scene) as Object3D | undefined;
-  if (!object) throw new Error(`Node ${asset.node} tidak ditemukan di ${asset.path}`);
+  const object = (asset.node ? nodes[asset.node] : scene) as
+    Object3D | undefined;
+  if (!object)
+    throw new Error(`Node ${asset.node} tidak ditemukan di ${asset.path}`);
   return (
     <group rotation={asset.rotation}>
       <Clone object={object} />
@@ -82,7 +90,11 @@ export default function ToolPreview({
 
   return (
     <div className={controls ? "equipment-viewer" : "tool-preview-viewer"}>
-      <div className="equipment-canvas" role="img" aria-label={`Model 3D ${id}`}>
+      <div
+        className="equipment-canvas"
+        role="img"
+        aria-label={`Model 3D ${id}`}
+      >
         <Canvas
           key={id}
           dpr={[1, 1.5]}

@@ -189,16 +189,8 @@ export function EquipmentModel({ id }: { id: EquipmentId }) {
     case "coat":
       return (
         <group position={[0, 0.02, 0]}>
-          <Part
-            at={[0, -0.08, 0]}
-            size={[0.72, 1.08, 0.24]}
-            color="#f1f3f2"
-          />
-          <Part
-            at={[0, -0.53, 0]}
-            size={[0.84, 0.32, 0.27]}
-            color="#f1f3f2"
-          />
+          <Part at={[0, -0.08, 0]} size={[0.72, 1.08, 0.24]} color="#f1f3f2" />
+          <Part at={[0, -0.53, 0]} size={[0.84, 0.32, 0.27]} color="#f1f3f2" />
           {[-1, 1].map((side) => (
             <group key={side}>
               <Rod

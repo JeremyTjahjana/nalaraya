@@ -1,9 +1,13 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Logo({ compact = false }: { compact?: boolean }) {
   return (
-    <Link className={`brand-logo${compact ? ' compact' : ''}`} href="/" aria-label="Nalaraya — beranda">
+    <Link
+      className={`brand-logo${compact ? " compact" : ""}`}
+      href="/"
+      aria-label="Nalaraya — beranda"
+    >
       <span className="brand-symbol">
         <Image
           src="/logo_nalaraya_symbol.png"

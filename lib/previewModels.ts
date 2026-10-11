@@ -7,7 +7,7 @@ export type PreviewAsset = {
 const glassware = "/models/chemistry_glassware.glb";
 
 export const previewAssets = {
-  microscope: { path: '/models/microscope.glb' },
+  microscope: { path: "/models/microscope.glb" },
   goggles: { path: "/models/glasses.preview.glb" },
   gloves: { path: "/models/gloves.preview.glb" },
   funnel: { path: "/models/funnel.glb" },

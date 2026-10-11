@@ -6,9 +6,7 @@ describe("preview model registry", () => {
     expect(getPreviewAsset("goggles")?.path).toBe(
       "/models/glasses.preview.glb",
     );
-    expect(getPreviewAsset("gloves")?.path).toBe(
-      "/models/gloves.preview.glb",
-    );
+    expect(getPreviewAsset("gloves")?.path).toBe("/models/gloves.preview.glb");
     expect(getPreviewAsset("funnel")?.path).toBe("/models/funnel.glb");
     expect(getPreviewAsset("beaker")?.node).toBe("lab_beaker_b_0");
     expect(getPreviewAsset("waste")).toEqual(getPreviewAsset("beaker"));

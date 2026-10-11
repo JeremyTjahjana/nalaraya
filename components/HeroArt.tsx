@@ -17,7 +17,13 @@ export default function HeroArt() {
           />
 
           {/* Volume markings */}
-          <g className="flask-graduations" stroke="#27322d" strokeWidth="2" opacity="0.45" strokeLinecap="round">
+          <g
+            className="flask-graduations"
+            stroke="#27322d"
+            strokeWidth="2"
+            opacity="0.45"
+            strokeLinecap="round"
+          >
             <line x1="182" y1="360" x2="204" y2="360" />
             <line x1="196" y1="320" x2="214" y2="320" />
             <line x1="210" y1="280" x2="226" y2="280" />
