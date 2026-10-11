@@ -410,12 +410,12 @@
   }
   .scope-controls button {
     font-size: 12px;
-    min-height: 36px;
+    min-height: 44px;
   }
   .stage-arrows button,
   .focus-buttons button {
     font-size: 18px;
-    min-width: 40px;
+    min-width: 44px;
   }
   .structure-checks {
     margin: 8px 0;

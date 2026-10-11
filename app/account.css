@@ -1,9 +1,10 @@
 .auth-layout {
   min-height: 100svh;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .auth-brand {
+  min-width: 0;
   background: #171717;
   color: #fff;
   padding: clamp(28px, 5vw, 74px);
@@ -42,12 +43,14 @@
   color: #d1d1ca;
 }
 .auth-panel {
+  min-width: 0;
   padding: clamp(28px, 5vw, 72px);
   display: flex;
   align-items: stretch;
   justify-content: center;
 }
 .auth-form-wrap {
+  min-width: 0;
   width: min(100%, 450px);
   display: flex;
   flex-direction: column;
@@ -58,6 +61,15 @@
 .auth-foot {
   font-size: 15px;
   color: var(--muted);
+}
+.auth-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  align-self: flex-start;
+}
+.auth-form-body h2:focus {
+  outline: none;
 }
 .auth-back:hover,
 .auth-text-button:hover,
@@ -130,6 +142,11 @@
   justify-self: end;
   font-size: 14px;
   margin-top: 2px;
+  min-height: 44px;
+}
+.auth-hint {
+  color: var(--muted);
+  font-size: 14px;
 }
 .auth-divider {
   height: 1px;
@@ -164,12 +181,17 @@
 .progress-save-error {
   padding: 12px 14px;
   border: 1px solid var(--red);
-  color: #8a1b1b;
-  background: #fff7f6;
+  color: var(--error-ink);
+  background: var(--error-surface);
   font-size: 15px;
 }
 .auth-form-body .auth-message {
   margin: 20px 0 0;
+}
+.auth-message.is-success {
+  border-color: var(--success-line);
+  color: var(--success-ink);
+  background: var(--success-surface);
 }
 .auth-form-body .auth-switch {
   margin: 28px 0 0;
@@ -178,6 +200,7 @@
 }
 .auth-switch button {
   color: var(--red);
+  min-height: 44px;
 }
 
 .account-page {
@@ -746,14 +769,15 @@
 
 @media (max-width: 850px) {
   .auth-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .auth-brand {
     min-height: 270px;
     gap: 30px;
   }
   .auth-brand h1 {
-    font-size: 48px;
+    font-size: clamp(34px, 8vw, 48px);
+    overflow-wrap: anywhere;
   }
   .auth-brand p {
     font-size: 17px;
@@ -772,6 +796,29 @@
   }
   .dashboard-subject.upcoming {
     grid-column: auto;
+  }
+}
+@media (max-width: 520px) {
+  .auth-brand {
+    min-height: 0;
+    gap: 24px;
+    padding: 24px;
+  }
+  .auth-brand h1 {
+    font-size: clamp(32px, 8vw, 40px);
+    margin-bottom: 12px;
+  }
+  .auth-brand p {
+    font-size: 15px;
+  }
+  .auth-panel {
+    padding: 24px 24px 40px;
+  }
+  .auth-form-wrap {
+    gap: 30px;
+  }
+  .auth-form-body h2 {
+    font-size: clamp(32px, 8vw, 38px);
   }
 }
 @media (max-width: 700px) {

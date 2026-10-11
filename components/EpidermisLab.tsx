@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useReducer, useRef, useState } from "react";
 import Logo from "./Logo";
-import { BiologyIcon, ToolIcon } from "./ScienceIcons";
+import { ToolIcon } from "./ScienceIcons";
 import {
   initial,
   reducer,
@@ -32,7 +32,6 @@ export default function EpidermisLab() {
     [camera, setCamera] = useState(false),
     [cameraKey, setCameraKey] = useState(0);
   const [muted, setMuted] = useState(false),
-    [portrait, setPortrait] = useState(true),
     [reduced, setReduced] = useState(false),
     [scope, setScope] = useState(false),
     [audioError, setAudioError] = useState(false);
@@ -44,19 +43,11 @@ export default function EpidermisLab() {
   const tipHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null),
     stageTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const orientation = matchMedia(
-        "(max-width: 900px) and (orientation: portrait)",
-      ),
-      motion = matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => {
-      setPortrait(orientation.matches);
-      setReduced(motion.matches);
-    };
+    const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(motion.matches);
     update();
-    orientation.addEventListener("change", update);
     motion.addEventListener("change", update);
     return () => {
-      orientation.removeEventListener("change", update);
       motion.removeEventListener("change", update);
     };
   }, []);
@@ -177,6 +168,7 @@ export default function EpidermisLab() {
           <button
             className={drawer === "tools" ? "tab-btn active" : "tab-btn"}
             aria-expanded={drawer === "tools"}
+            aria-controls="biology-tools"
             onClick={() => setDrawer(drawer === "tools" ? "" : "tools")}
           >
             Alat & bahan
@@ -184,6 +176,7 @@ export default function EpidermisLab() {
           <button
             className={drawer === "notes" ? "tab-btn active" : "tab-btn"}
             aria-expanded={drawer === "notes"}
+            aria-controls="biology-notes"
             onClick={() => setDrawer(drawer === "notes" ? "" : "notes")}
           >
             Panduan
@@ -227,6 +220,7 @@ export default function EpidermisLab() {
       </header>
       <div className={drawer ? "lab-body drawer-" + drawer : "lab-body"}>
         <aside
+          id="biology-tools"
           className={`inventory ${drawer === "tools" ? "opened" : ""}`}
           onMouseLeave={hideToolTip}
         >
@@ -398,17 +392,15 @@ export default function EpidermisLab() {
               }
             }}
           >
-            {!portrait && (
-              <Scene
-                state={state}
-                cameraMode={camera}
-                resetKey={cameraKey}
-                reduced={reduced}
-                onMove={(id, pos) => dispatch({ type: "move", id, pos })}
-                onDrop={interact}
-                onClick={click}
-              />
-            )}
+            <Scene
+              state={state}
+              cameraMode={camera}
+              resetKey={cameraKey}
+              reduced={reduced}
+              onMove={(id, pos) => dispatch({ type: "move", id, pos })}
+              onDrop={interact}
+              onClick={click}
+            />
           </div>
           <div className="scene-help">
             {camera
@@ -470,7 +462,10 @@ export default function EpidermisLab() {
             </details>
           </div>
         </main>
-        <aside className={drawer === "notes" ? "notes opened" : "notes"}>
+        <aside
+          id="biology-notes"
+          className={drawer === "notes" ? "notes opened" : "notes"}
+        >
           <div className="panel-heading mobile-notes-heading">
             <div>
               <h2>
@@ -533,18 +528,10 @@ export default function EpidermisLab() {
       {drawer !== "" && (
         <div className="drawer-backdrop" onClick={() => setDrawer("")} />
       )}
-      <div className="portrait-gate" role="status">
-        <BiologyIcon />
-        <h2>Putar perangkat ke landscape.</h2>
-        <p>
-          Ruang praktikum membutuhkan bidang kerja mendatar agar alat dapat
-          dipindahkan dengan akurat.
-        </p>
-      </div>
       <MicroscopeView
         state={state}
         dispatch={dispatch}
-        open={scope && !portrait}
+        open={scope}
         onClose={() => setScope(false)}
       />
     </div>

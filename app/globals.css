@@ -3,6 +3,13 @@
   --muted: #64645e;
   --line: #deded8;
   --red: #bd2929;
+  --error-ink: #8a1b1b;
+  --error-surface: #fff7f6;
+  --success-ink: #235c37;
+  --success-surface: #f3f8f4;
+  --success-line: #93b19d;
+  --danger: #b73535;
+  --danger-hover: #982b2b;
 }
 
 * {
@@ -654,7 +661,7 @@ time {
 .step-list li {
   display: flex;
   gap: 10px;
-  color: #777970;
+  color: #686b63;
   font-size: 12px;
   line-height: 1.35;
   margin: 16px 0;
@@ -5299,19 +5306,16 @@ button,
 
 .lab-exit {
   padding: 10px 16px !important;
-  background: #d54a4a;
-  color: #111;
-  border: 1px solid #b73535;
+  background: var(--danger);
+  color: #fff;
+  border: 1px solid var(--danger);
   font-weight: 700;
 }
 
 .lab-exit:hover {
-  background: #c23a3a;
-  color: #111;
-}
-
-.portrait-gate {
-  display: none;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  color: #fff;
 }
 
 @media (max-width: 1180px) and (min-width: 901px) {
@@ -5466,42 +5470,6 @@ button,
 
   .course-next a {
     width: 100%;
-  }
-}
-
-@media (max-width: 900px) and (orientation: portrait) {
-  .portrait-gate {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    text-align: center;
-    padding: 34px;
-    background: #fff;
-    color: var(--ink);
-  }
-
-  .portrait-gate svg {
-    width: 72px;
-    height: 72px;
-    fill: none;
-    stroke: var(--red);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    margin-bottom: 26px;
-  }
-
-  .portrait-gate h2 {
-    font-size: 31px;
-    margin-bottom: 12px;
-  }
-
-  .portrait-gate p {
-    max-width: 420px;
-    color: var(--muted);
   }
 }
 
@@ -5686,6 +5654,15 @@ button,
 .equipment-viewer {
   background: #fff;
   border-bottom: 1px solid var(--line);
+}
+.deferred-preview {
+  display: grid;
+  place-items: center;
+  min-height: 330px;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
 }
 
 .equipment-canvas {
@@ -6166,8 +6143,8 @@ body:has(.course-quiz-dialog[open]) {
     font-size: 13px;
   }
   .lab-header .sound-toggle {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     padding: 8px;
     flex-shrink: 0;
   }
@@ -6176,7 +6153,7 @@ body:has(.course-quiz-dialog[open]) {
     height: 18px;
   }
   .lab-header .lab-exit {
-    min-height: 36px;
+    min-height: 44px;
     padding: 6px 11px !important;
     font-size: 12px;
   }
@@ -6239,15 +6216,71 @@ body:has(.course-quiz-dialog[open]) {
     gap: 4px !important;
   }
   .camera-toolbar button {
-    height: 36px !important;
-    min-height: 36px !important;
-    max-height: 36px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
     padding: 0 9px !important;
     font-size: 11px !important;
   }
   .open-titration {
+    min-height: 44px;
     padding: 7px 10px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .lab-shell .lab-header {
+    height: auto;
+    min-height: 100px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px auto;
+    grid-template-areas:
+      "brand sound exit"
+      "tabs tabs progress";
+    gap: 4px 8px;
+    padding: 7px 10px;
+  }
+  .lab-header .lab-brand-group {
+    grid-area: brand;
+    min-width: 0;
+  }
+  .lab-header .lab-title-wrap,
+  .lab-header .lab-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lab-header .sound-toggle {
+    grid-area: sound;
+  }
+  .lab-header .lab-exit {
+    grid-area: exit;
+  }
+  .lab-header .mobile-tabs {
+    grid-area: tabs;
+    min-width: 0;
+  }
+  .lab-header .lab-progress {
+    grid-area: progress;
+    margin: 0;
+  }
+  .lab-shell .lab-body {
+    height: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  .lab-shell .camera-toolbar button {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+  }
+  .lab-shell .open-titration {
+    min-height: 44px;
+  }
+  .biology-lab .bio-controls {
+    display: block;
+    flex: none;
   }
 }
 

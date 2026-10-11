@@ -1,8 +1,7 @@
 "use client";
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import { epidermisTools } from "@/lib/epidermis";
-const Preview = dynamic(() => import("./ToolPreview"), { ssr: false });
+import DeferredToolPreview from "./DeferredToolPreview";
 export default function BiologyEquipment() {
   const [selected, setSelected] = useState("microscope"),
     tool = epidermisTools.find((t) => t.id === selected)!;
@@ -32,7 +31,7 @@ export default function BiologyEquipment() {
             <strong>Penggunaan aman.</strong> {tool.safety}
           </p>
         </div>
-        <Preview id={selected} controls />
+        <DeferredToolPreview id={selected} />
       </div>
     </section>
   );

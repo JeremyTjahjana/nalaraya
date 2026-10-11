@@ -1,5 +1,5 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -16,11 +16,18 @@ export default function AuthForm({
   const router = useRouter();
   const [view, setView] = useState<"login" | "signup" | "forgot">("login");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState(
-    callbackError ? "Tautan masuk tidak berhasil. Coba lagi." : "",
+  const [message, setMessage] = useState<{
+    text: string;
+    kind: "error" | "success";
+  } | null>(
+    callbackError
+      ? { text: "Tautan masuk tidak berhasil. Coba lagi.", kind: "error" }
+      : null,
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previousView = useRef(view);
   const supabase = createClient();
   const callback =
     typeof window === "undefined"
@@ -30,61 +37,91 @@ export default function AuthForm({
           window.location.origin,
         ).toString();
 
+  useEffect(() => {
+    if (previousView.current !== view) {
+      headingRef.current?.focus();
+      previousView.current = view;
+    }
+  }, [view]);
+
+  function changeView(nextView: typeof view) {
+    setView(nextView);
+    setMessage(null);
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase) return;
+    if (!supabase || busy) return;
     setBusy(true);
-    setMessage("");
-    if (view === "forgot") {
-      const redirectTo = new URL(
-        "/auth/callback?next=" + encodeURIComponent("/atur-ulang-sandi"),
-        window.location.origin,
-      ).toString();
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      });
-      setMessage(
-        error
-          ? error.message
-          : "Jika alamat ini terdaftar, tautan pengaturan ulang akan dikirim ke emailmu.",
-      );
-    } else if (view === "signup") {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: callback },
-      });
-      if (error) setMessage(error.message);
-      else if (data.session)
-        router.push("/lanjut?next=" + encodeURIComponent(next));
-      else
+    setMessage(null);
+    try {
+      if (view === "forgot") {
+        const redirectTo = new URL(
+          "/auth/callback?next=" + encodeURIComponent("/atur-ulang-sandi"),
+          window.location.origin,
+        ).toString();
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo,
+        });
         setMessage(
-          "Periksa emailmu untuk mengonfirmasi akun, lalu lanjutkan ke Nalaraya.",
+          error
+            ? { text: error.message, kind: "error" }
+            : {
+                text: "Jika alamat ini terdaftar, tautan pengaturan ulang akan dikirim ke emailmu.",
+                kind: "success",
+              },
         );
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) setMessage(error.message);
-      else {
-        router.push("/lanjut?next=" + encodeURIComponent(next));
-        router.refresh();
+      } else if (view === "signup") {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: callback },
+        });
+        if (error) setMessage({ text: error.message, kind: "error" });
+        else if (data.session)
+          router.push("/lanjut?next=" + encodeURIComponent(next));
+        else
+          setMessage({
+            text: "Periksa emailmu untuk mengonfirmasi akun, lalu lanjutkan ke Nalaraya.",
+            kind: "success",
+          });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) setMessage({ text: error.message, kind: "error" });
+        else {
+          router.push("/lanjut?next=" + encodeURIComponent(next));
+          router.refresh();
+        }
       }
+    } catch {
+      setMessage({
+        text: "Koneksi terputus. Periksa internetmu, lalu coba lagi.",
+        kind: "error",
+      });
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   async function google() {
-    if (!supabase) return;
+    if (!supabase || busy) return;
     setBusy(true);
-    setMessage("");
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: callback },
-    });
-    if (error) {
-      setMessage(error.message);
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: callback },
+      });
+      if (error) setMessage({ text: error.message, kind: "error" });
+    } catch {
+      setMessage({
+        text: "Koneksi terputus. Periksa internetmu, lalu coba lagi.",
+        kind: "error",
+      });
+    } finally {
       setBusy(false);
     }
   }
@@ -95,7 +132,7 @@ export default function AuthForm({
         ← Kembali ke beranda
       </Link>
       <div className="auth-form-body">
-        <h2>
+        <h2 ref={headingRef} tabIndex={-1}>
           {view === "signup"
             ? "Buat akun"
             : view === "forgot"
@@ -115,7 +152,7 @@ export default function AuthForm({
             jalankan migrasi database.
           </p>
         )}
-        <form onSubmit={submit} className="auth-form">
+        <form onSubmit={submit} className="auth-form" aria-busy={busy}>
           <label htmlFor="auth-email">Email</label>
           <input
             id="auth-email"
@@ -140,7 +177,15 @@ export default function AuthForm({
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 disabled={!configured || busy}
+                aria-describedby={
+                  view === "signup" ? "auth-password-hint" : undefined
+                }
               />
+              {view === "signup" && (
+                <span className="auth-hint" id="auth-password-hint">
+                  Sedikitnya 6 karakter.
+                </span>
+              )}
             </>
           )}
           {view === "login" && (
@@ -148,8 +193,7 @@ export default function AuthForm({
               type="button"
               className="auth-text-button"
               onClick={() => {
-                setView("forgot");
-                setMessage("");
+                changeView("forgot");
               }}
             >
               Lupa kata sandi?
@@ -208,8 +252,12 @@ export default function AuthForm({
           </>
         )}
         {message && (
-          <p className="auth-message" role="status">
-            {message}
+          <p
+            className={`auth-message ${message.kind === "success" ? "is-success" : ""}`}
+            id="auth-message"
+            role={message.kind === "error" ? "alert" : "status"}
+          >
+            {message.text}
           </p>
         )}
         <p className="auth-switch">
@@ -218,8 +266,7 @@ export default function AuthForm({
               Belum punya akun?{" "}
               <button
                 onClick={() => {
-                  setView("signup");
-                  setMessage("");
+                  changeView("signup");
                 }}
               >
                 Daftar
@@ -230,8 +277,7 @@ export default function AuthForm({
               Sudah punya akun?{" "}
               <button
                 onClick={() => {
-                  setView("login");
-                  setMessage("");
+                  changeView("login");
                 }}
               >
                 Masuk

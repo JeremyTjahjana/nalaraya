@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import HazardLegend from "./HazardLegend";
@@ -13,11 +12,7 @@ import {
   saveCompletion,
 } from "@/lib/introduction";
 import { createClient } from "@/lib/supabase/client";
-
-const Preview = dynamic(() => import("./ToolPreview"), {
-  ssr: false,
-  loading: () => <p className="course-preview-loading">Menyiapkan model…</p>,
-});
+import DeferredToolPreview from "./DeferredToolPreview";
 
 const toolCategory: Record<EquipmentId, string> = {
   goggles: "Alat Pelindung Diri",
@@ -221,7 +216,7 @@ export default function LabIntroduction() {
             ))}
           </nav>
           <article className="equipment-detail" aria-label={item.name}>
-            <Preview key={selected} id={selected} controls />
+            <DeferredToolPreview id={selected} />
             <div className="equipment-copy" aria-live="polite">
               <div className="equipment-copy-header">
                 <span className="equipment-category-pill">

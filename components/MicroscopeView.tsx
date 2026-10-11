@@ -22,11 +22,12 @@ export default function MicroscopeView({
   const dialog = useRef<HTMLDialogElement>(null),
     previousFocus = useRef<HTMLElement | null>(null);
   const drag = useRef<{
+      pointerId: number;
       x: number;
       y: number;
       offset: [number, number];
     } | null>(null),
-    knob = useRef<{ x: number; value: number } | null>(null);
+    knob = useRef<{ pointerId: number; x: number; value: number } | null>(null);
   const [cursor, setCursor] = useState<[number, number]>([250, 250]);
   const assessing = state.step === 10,
     complete = state.marked.length === 3;
@@ -39,6 +40,14 @@ export default function MicroscopeView({
       previousFocus.current?.focus();
     }
   }, [open]);
+  useEffect(() => {
+    const stopDrag = () => {
+      drag.current = null;
+      knob.current = null;
+    };
+    window.addEventListener("blur", stopDrag);
+    return () => window.removeEventListener("blur", stopDrag);
+  }, []);
   const shift = (x: number, y: number) =>
     dispatch({
       type: "adjust",
@@ -93,7 +102,9 @@ export default function MicroscopeView({
                 dispatch({ type: "mark", x, y });
                 return;
               }
+              if (drag.current) return;
               drag.current = {
+                pointerId: e.pointerId,
                 x: e.clientX,
                 y: e.clientY,
                 offset: state.offset,
@@ -101,7 +112,8 @@ export default function MicroscopeView({
               e.currentTarget.setPointerCapture(e.pointerId);
             }}
             onPointerMove={(e) => {
-              if (!drag.current) return;
+              if (!drag.current || drag.current.pointerId !== e.pointerId)
+                return;
               const scale = 500 / e.currentTarget.getBoundingClientRect().width;
               dispatch({
                 type: "adjust",
@@ -112,12 +124,16 @@ export default function MicroscopeView({
               });
             }}
             onPointerUp={(e) => {
+              if (drag.current?.pointerId !== e.pointerId) return;
               drag.current = null;
               if (e.currentTarget.hasPointerCapture(e.pointerId))
                 e.currentTarget.releasePointerCapture(e.pointerId);
             }}
-            onPointerCancel={() => {
-              drag.current = null;
+            onPointerCancel={(e) => {
+              if (drag.current?.pointerId === e.pointerId) drag.current = null;
+            }}
+            onLostPointerCapture={(e) => {
+              if (drag.current?.pointerId === e.pointerId) drag.current = null;
             }}
             onKeyDown={(e) => {
               const d: Record<string, [number, number]> = {
@@ -320,11 +336,16 @@ export default function MicroscopeView({
                       : `Posisi knob ${Math.round(state.focus)}`
                   }
                   onPointerDown={(e) => {
-                    knob.current = { x: e.clientX, value: state.focus };
+                    if (knob.current) return;
+                    knob.current = {
+                      pointerId: e.pointerId,
+                      x: e.clientX,
+                      value: state.focus,
+                    };
                     e.currentTarget.setPointerCapture(e.pointerId);
                   }}
                   onPointerMove={(e) => {
-                    if (knob.current)
+                    if (knob.current?.pointerId === e.pointerId)
                       dispatch({
                         type: "adjust",
                         focus:
@@ -333,11 +354,18 @@ export default function MicroscopeView({
                       });
                   }}
                   onPointerUp={(e) => {
+                    if (knob.current?.pointerId !== e.pointerId) return;
                     knob.current = null;
-                    e.currentTarget.releasePointerCapture(e.pointerId);
+                    if (e.currentTarget.hasPointerCapture(e.pointerId))
+                      e.currentTarget.releasePointerCapture(e.pointerId);
                   }}
-                  onPointerCancel={() => {
-                    knob.current = null;
+                  onPointerCancel={(e) => {
+                    if (knob.current?.pointerId === e.pointerId)
+                      knob.current = null;
+                  }}
+                  onLostPointerCapture={(e) => {
+                    if (knob.current?.pointerId === e.pointerId)
+                      knob.current = null;
                   }}
                   onKeyDown={(e) => {
                     if (

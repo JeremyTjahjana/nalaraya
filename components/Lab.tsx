@@ -171,6 +171,8 @@ export default function Lab() {
         <div className="mobile-tabs">
           <button
             className={`tab-btn${drawer === "tools" ? " active" : ""}`}
+            aria-expanded={drawer === "tools"}
+            aria-controls="chemistry-tools"
             onClick={() => setDrawer(drawer === "tools" ? "" : "tools")}
           >
             Alat & Bahan{" "}
@@ -178,6 +180,8 @@ export default function Lab() {
           </button>
           <button
             className={`tab-btn${drawer === "notes" ? " active" : ""}`}
+            aria-expanded={drawer === "notes"}
+            aria-controls="chemistry-notes"
             onClick={() => setDrawer(drawer === "notes" ? "" : "notes")}
           >
             Panduan <span className="tab-badge">{state.step + 1}/10</span>
@@ -219,6 +223,7 @@ export default function Lab() {
       </header>
       <div className={`lab-body${drawer ? ` drawer-${drawer}` : ""}`}>
         <aside
+          id="chemistry-tools"
           className={`inventory ${drawer === "tools" ? "opened" : ""}`}
           onMouseLeave={hideToolTip}
         >
@@ -444,7 +449,10 @@ export default function Lab() {
             </button>
           )}
         </main>
-        <aside className={`notes ${drawer === "notes" ? "opened" : ""}`}>
+        <aside
+          id="chemistry-notes"
+          className={`notes ${drawer === "notes" ? "opened" : ""}`}
+        >
           <div className="panel-heading mobile-notes-heading">
             <div>
               <h2>Panduan & Catatan</h2>
@@ -545,17 +553,6 @@ export default function Lab() {
       {drawer !== "" && (
         <div className="drawer-backdrop" onClick={() => setDrawer("")} />
       )}
-      <div className="portrait-gate" role="status">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <rect x="20" y="8" width="24" height="42" rx="3" />
-          <path d="M49 25c6 7 6 17 0 24m3-5-3 5-5-3" />
-        </svg>
-        <h2>Putar perangkat ke landscape.</h2>
-        <p>
-          Ruang praktikum membutuhkan bidang kerja mendatar agar alat dapat
-          dipindahkan dengan akurat.
-        </p>
-      </div>
       {state.step === 8 && titrationOpen && (
         <TitrationDialog
           state={state}

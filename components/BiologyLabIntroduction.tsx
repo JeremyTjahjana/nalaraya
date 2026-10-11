@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
@@ -13,11 +12,7 @@ import {
   readBiologyCompletion,
   saveBiologyCompletion,
 } from "@/lib/biologyIntro";
-
-const Preview = dynamic(() => import("./ToolPreview"), {
-  ssr: false,
-  loading: () => <p className="course-preview-loading">Menyiapkan model…</p>,
-});
+import DeferredToolPreview from "./DeferredToolPreview";
 
 export default function BiologyLabIntroduction() {
   const [selected, setSelected] = useState<BiologyToolId>("microscope");
@@ -150,7 +145,7 @@ export default function BiologyLabIntroduction() {
             ))}
           </nav>
           <article className="equipment-detail" aria-label={item.name}>
-            <Preview key={selected} id={selected} controls />
+            <DeferredToolPreview id={selected} />
             <div className="equipment-copy" aria-live="polite">
               <div className="equipment-copy-header">
                 <span className="equipment-category-pill">{item.category}</span>
